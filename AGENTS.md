@@ -1,126 +1,126 @@
-# Codex Project Rules
+# Codex 项目规则
 
-This repository uses `agent-sprite-forge` as the required production workflow for game art assets.
+本仓库必须使用 `agent-sprite-forge` 作为游戏美术资产的生产流程。
 
-## Mandatory Asset Rule
+## 强制资产规则
 
-Any asset intended to be used as runtime game art must go through one of these skills:
+任何准备进入游戏运行时的美术资产，都必须通过以下两个 skill 之一：
 
 - `D:\agent-sprite-forge\skills\generate2dsprite\SKILL.md`
 - `D:\agent-sprite-forge\skills\generate2dmap\SKILL.md`
 
-Do not generate runtime sprites, props, effects, buildings, or playable maps by freehand prompt alone.
+不要只靠自由手写 prompt 生成运行时用的角色、道具、特效、建筑或可玩地图。
 
-Concept images are allowed, but they must stay under:
+允许生成概念图，但概念图只能放在：
 
 ```text
 art/concepts/
 art/style-exploration/
 ```
 
-Concept images must not be wired into runtime gameplay as final assets.
+概念图不能作为最终游戏资产直接接入运行时玩法。
 
-## Skill Selection
+## Skill 选择规则
 
-Use `generate2dsprite` for:
+以下内容使用 `generate2dsprite`：
 
-- player characters
-- NPCs
-- creatures
-- tools
-- props
-- buildings as placeable props
-- crops
-- trees
-- projectiles
-- spell effects
-- hit impacts
-- animation sheets
+- 玩家角色
+- NPC
+- 生物 / 怪物
+- 工具
+- 道具
+- 可放置建筑
+- 作物
+- 树木
+- 投射物
+- 法术特效
+- 命中特效
+- 动画帧表
 
-Use `generate2dmap` for:
+以下内容使用 `generate2dmap`：
 
-- playable village maps
-- layered raster maps
-- base terrain layers
-- map prop placement
-- collision metadata
-- trigger zones
-- scene hooks
-- map previews
+- 可玩的村庄地图
+- 分层 raster 地图
+- 基础地形层
+- 地图道具摆放
+- 碰撞元数据
+- 触发区
+- 场景 hook
+- 地图预览图
 
-If a request includes both a map and sprites, use both skills and keep their outputs separate.
+如果一个需求同时包含地图和 sprite，必须同时使用两个 skill，并保持输出分离。
 
-## Required Production Run Record
+## 必须记录生产过程
 
-Every runtime asset generation must create a markdown record under:
+每次生成运行时资产，都必须在以下目录创建一份 Markdown 记录：
 
 ```text
 art/production-runs/
 ```
 
-The record must include:
+记录必须包含：
 
-- date and purpose
-- skill used
-- skill source path
-- exact prompt
-- visual model / runtime object model when using `generate2dmap`
-- asset type / action / view / sheet / frames / bundle when using `generate2dsprite`
-- raw output paths
-- postprocessing commands
-- final output paths
-- QC result
-- Godot integration notes
+- 日期和目的
+- 使用的 skill
+- skill 源文件路径
+- 完整 prompt
+- 使用 `generate2dmap` 时的 visual model / runtime object model
+- 使用 `generate2dsprite` 时的 asset type / action / view / sheet / frames / bundle
+- 原始输出路径
+- 后处理命令
+- 最终输出路径
+- QC 结果
+- Godot 接入说明
 
-If this record is missing, the generated file is not considered a valid runtime asset.
+如果缺少这份记录，生成出来的文件不算合格的运行时资产。
 
-## Runtime Asset Requirements
+## 运行时资产要求
 
-Runtime assets must satisfy the relevant skill contract:
+运行时资产必须满足对应 skill 的契约：
 
-- generated visual art must originate from Image2 / image generation, not procedural code drawing
-- raw sprite sheets should use solid `#FF00FF` chroma-key background unless the skill says otherwise
-- final sprites should be transparent PNG whenever possible
-- maps must not be a single baked gameplay image unless explicitly marked concept/reference only
-- playable maps need separate objects, collision, zones, scene hooks, or placement metadata
-- controllable hero actions should be generated as separate action sheets before assembling final atlases
-- wide attack effects should be separate FX sheets, not baked into the player body sheet
+- 视觉美术必须来自 Image2 / 图像生成，而不是程序绘制的几何占位图。
+- 原始 sprite sheet 默认使用纯 `#FF00FF` chroma-key 背景，除非 skill 明确要求其他流程。
+- 最终 sprite 应尽可能是透明 PNG。
+- 地图不能是一张烘焙好的完整玩法截图，除非明确标记为概念图或参考图。
+- 可玩地图需要拆出独立对象、碰撞、区域、scene hooks 或摆放元数据。
+- 可控制主角的动作应先分别生成独立 action sheet，再组装最终 atlas。
+- 宽幅攻击特效应是独立 FX sheet，不要烘焙进主角身体动作帧里。
 
-## Current Local Skill Source
+## 当前本地 Skill 来源
 
-The local fork currently exists at:
+当前本地 fork 路径：
 
 ```text
 D:\agent-sprite-forge
 ```
 
-Before producing runtime assets, read the relevant `SKILL.md` from that location in the current session.
+在生成任何运行时资产之前，当前会话必须先读取该路径下对应的 `SKILL.md`。
 
-## Godot Integration Rule
+## Godot 接入规则
 
-Keep Godot runtime code separate from the asset production tool:
+Godot 运行时代码和资产生产工具必须分离：
 
 ```text
-tools/agent-sprite-forge/   # optional submodule/tool copy
-art/                        # generated assets and production records
-scenes/                     # Godot scenes
-scripts/                    # Godot scripts
+tools/agent-sprite-forge/   # 可选 submodule / 工具副本
+art/                        # 生成资产和生产记录
+scenes/                     # Godot 场景
+scripts/                    # Godot 脚本
 ```
 
-Do not make `agent-sprite-forge` a runtime dependency for playing the game.
+不要让 `agent-sprite-forge` 成为玩家运行游戏时的依赖。
 
-## Validation
+## 验证规则
 
-Before committing an asset integration:
+提交资产接入前，必须运行：
 
 ```powershell
 godot_console.exe --headless --path . --quit-after 5
 ```
 
-If new image files were added, run:
+如果新增了图片文件，还必须运行：
 
 ```powershell
 godot_console.exe --headless --path . --import
 ```
 
-Commit the generated assets, import metadata, production run record, and integration code together.
+生成资产、导入元数据、生产记录和接入代码必须一起提交。
