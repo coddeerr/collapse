@@ -1,0 +1,29 @@
+Use case: stylized-concept
+Skill: generate2dsprite
+Asset type: player
+Action: walk
+View: 3/4
+Sheet: 4x4 canonical directional locomotion
+Frames: 16
+Bundle: hero_action_bundle
+Anchor: feet
+Art style: clean_hd / project-native
+
+Primary request:
+Generate a 4x4 directional walking animation sheet for the same controllable teenage / youth hero of a light 45-degree top-down 2D game. The hero must be a 14 to 16 year old homestead guardian apprentice, not an adult.
+
+Character identity:
+Same identity as the youth idle sheet: slim agile teenage guardian apprentice, youthful face, no beard, short messy hair or small hood, slightly oversized patched field jacket, simple scarf, small backpack, gloves, boots, small lantern charm, short hatchet or simple wooden practice blade kept close to the body. Keep costume, palette, silhouette, age, and scale consistent in every frame.
+
+Animation and directions:
+Use four rows for four walking directions in a top-down/3-quarter game: down-facing, side-facing right, up-facing, side-facing left. Each row has four walking frames. Movement should feel light and young, with short careful steps. Body-only movement. No attack slash, no spell effects, no dust, no detached FX.
+
+Style:
+Clean hand-painted HD 2D game character sprite, readable at small gameplay size, light 45-degree top-down view, slightly painterly, cozy-survival post-disaster homestead tone. Not pixel art, not photorealistic, not anime-chibi, not realistic portrait art.
+
+Sprite constraints:
+Use an exact 4x4 grid. Same teenage character identity in every frame. Keep the body centered in every cell, full body inside the central 60% to 70% safe area, consistent scale across all rows, stable feet/bottom anchor line, and generous padding. Put the whole sheet on a perfectly flat solid #FF00FF chroma-key background. The background must be one uniform color with no shadows, gradients, texture, borders, labels, guide lines, or floor plane. No limb, weapon, hair, scarf, or backpack may cross cell edges. No text; no labels; no watermark.
+
+Avoid:
+No beard, no adult face, no bulky adult body, no military armor, no sci-fi suit, no large weapons swinging, no attack effect, no projectiles, no extra characters, no UI, no background scenery.
+

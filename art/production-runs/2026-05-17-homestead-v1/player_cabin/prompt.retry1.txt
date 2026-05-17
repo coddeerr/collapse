@@ -1,0 +1,11 @@
+Generate one standalone 2D game building sprite.
+
+Subject: a compact survivor cabin for a small human safe homestead after Earth disasters. Repaired wood, patched metal, canvas details, warm amber window light, visible front doorway facing slightly down toward the camera. Cozy but defensible, readable silhouette.
+
+Perspective: light 45-degree top-down, not side view, not full isometric.
+
+Style: clean hand-painted HD 2D game prop, slightly painterly, warm safe-zone greens and amber light, muted weathered brown materials, subtle cool polluted-world wear. Not pixel art, not photorealistic.
+
+Sprite constraints: exactly one complete cabin, centered, generous padding, on a perfectly flat solid #FF00FF chroma-key background. Background must be one uniform color: no shadows, no gradient, no texture, no floor plane. Cabin must not touch edges.
+
+Avoid: no trees, no fences, no people, no monsters, no UI, no text, no labels, no watermark, no background scenery, no multiple buildings.

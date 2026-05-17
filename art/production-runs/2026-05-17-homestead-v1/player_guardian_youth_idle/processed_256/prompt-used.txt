@@ -1,0 +1,29 @@
+Use case: stylized-concept
+Skill: generate2dsprite
+Asset type: player
+Action: idle
+View: 3/4
+Sheet: 2x2
+Frames: 4
+Bundle: hero_action_bundle
+Anchor: feet
+Art style: clean_hd / project-native
+
+Primary request:
+Generate a 2x2 four-frame idle animation sheet for the controllable hero of a light 45-degree top-down 2D game. The hero must be a teenage / youth guardian, not an adult.
+
+Character identity:
+A 14 to 16 year old homestead guardian apprentice, slim and agile, hopeful but serious. Youthful face, smaller body proportions, no beard, no mature adult musculature. Short messy hair or a small hood, patched field jacket that is slightly oversized, simple scarf, small backpack, gloves, boots, and a small lantern charm at the belt or chest. A short hatchet or simple wooden practice blade is strapped close to the body. The character should feel like a young survivor learning to protect the last safe home, not a soldier, not a rugged adult mercenary.
+
+Animation:
+Four subtle idle frames: breathing, slight weight shift, tiny scarf or coat motion. Body-only animation. No attack slash, no spell effects, no dust, no detached FX.
+
+Style:
+Clean hand-painted HD 2D game character sprite, readable at small gameplay size, light 45-degree top-down view, slightly painterly, cozy-survival post-disaster homestead tone. Not pixel art, not photorealistic, not anime-chibi, not realistic portrait art.
+
+Sprite constraints:
+Use an exact 2x2 grid. Same teenage character identity in every frame. Keep the body centered in every cell, full body inside the central 60% to 70% safe area, consistent scale, stable feet/bottom anchor line, and generous padding. Put the whole sheet on a perfectly flat solid #FF00FF chroma-key background. The background must be one uniform color with no shadows, gradients, texture, borders, labels, guide lines, or floor plane. No limb, weapon, hair, scarf, or backpack may cross cell edges. No text; no labels; no watermark.
+
+Avoid:
+No beard, no adult face, no bulky adult body, no military armor, no sci-fi suit, no large weapons swinging, no attack effect, no projectiles, no extra characters, no UI, no background scenery.
+

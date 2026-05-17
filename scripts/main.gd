@@ -27,9 +27,15 @@ const CROP_GROW_TIME := 12.0
 const DAY_LENGTH := 150.0
 const ACTION_DURATION := 0.28
 const SKILL_DURATION := 0.46
-const BUILDINGS_SHEET_PATH := "res://art/forge_source/buildings_sheet_chroma.png"
-const PROPS_SHEET_PATH := "res://art/forge_source/props_farm_sheet_chroma.png"
-const PLAYER_SHEET_PATH := "res://art/sprites/player/player_guardian_sheet.png"
+const HOMESTEAD_BASE_PATH := "res://art/maps/homestead_v1/base.png"
+const CABIN_PATH := "res://art/sprites/buildings/player_cabin/cabin.png"
+const TREE_PATH := "res://art/sprites/props/choppable_tree/tree.png"
+const FARM_TILLED_PATH := "res://art/sprites/props/farm_plot_states/tilled.png"
+const FARM_SEEDED_PATH := "res://art/sprites/props/farm_plot_states/seeded.png"
+const FARM_WATERED_PATH := "res://art/sprites/props/farm_plot_states/watered.png"
+const FARM_MATURE_PATH := "res://art/sprites/props/farm_plot_states/mature.png"
+const PLAYER_IDLE_PATH := "res://art/sprites/player/guardian_youth/idle.png"
+const PLAYER_WALK_PATH := "res://art/sprites/player/guardian_youth/walk.png"
 
 const TOOLS := [
 	{"id": Tool.HOE, "name": "锄头", "hint": "开垦空地"},
@@ -51,11 +57,15 @@ var day_time := 0.24
 var day_count := 1
 var herbs := 0
 var wood := 0
+var player_is_moving := false
 var action_label_timer := 0.0
 var action_label_text := ""
-var buildings_sheet: Texture2D
-var props_sheet: Texture2D
-var player_sheet: Texture2D
+var homestead_base: Texture2D
+var cabin_texture: Texture2D
+var tree_texture: Texture2D
+var player_idle_sheet: Texture2D
+var player_walk_sheet: Texture2D
+var farm_plot_textures: Dictionary = {}
 
 var plots: Array[Dictionary] = []
 var trees: Array[Dictionary] = []
@@ -68,9 +78,17 @@ var log_label: Label
 
 
 func _ready() -> void:
-	buildings_sheet = load(BUILDINGS_SHEET_PATH) as Texture2D if ResourceLoader.exists(BUILDINGS_SHEET_PATH) else null
-	props_sheet = load(PROPS_SHEET_PATH) as Texture2D if ResourceLoader.exists(PROPS_SHEET_PATH) else null
-	player_sheet = load(PLAYER_SHEET_PATH) as Texture2D if ResourceLoader.exists(PLAYER_SHEET_PATH) else null
+	homestead_base = load(HOMESTEAD_BASE_PATH) as Texture2D if ResourceLoader.exists(HOMESTEAD_BASE_PATH) else null
+	cabin_texture = load(CABIN_PATH) as Texture2D if ResourceLoader.exists(CABIN_PATH) else null
+	tree_texture = load(TREE_PATH) as Texture2D if ResourceLoader.exists(TREE_PATH) else null
+	player_idle_sheet = load(PLAYER_IDLE_PATH) as Texture2D if ResourceLoader.exists(PLAYER_IDLE_PATH) else null
+	player_walk_sheet = load(PLAYER_WALK_PATH) as Texture2D if ResourceLoader.exists(PLAYER_WALK_PATH) else null
+	farm_plot_textures = {
+		CropState.TILLED: load(FARM_TILLED_PATH) as Texture2D if ResourceLoader.exists(FARM_TILLED_PATH) else null,
+		CropState.SEEDED: load(FARM_SEEDED_PATH) as Texture2D if ResourceLoader.exists(FARM_SEEDED_PATH) else null,
+		CropState.WATERED: load(FARM_WATERED_PATH) as Texture2D if ResourceLoader.exists(FARM_WATERED_PATH) else null,
+		CropState.MATURE: load(FARM_MATURE_PATH) as Texture2D if ResourceLoader.exists(FARM_MATURE_PATH) else null,
+	}
 	_setup_world()
 	_setup_ui()
 	_log("欢迎来到灯火边境家园原型。WASD 移动，滚轮切换工具，左键或空格使用。")
@@ -119,27 +137,25 @@ func _setup_world() -> void:
 	trees.clear()
 	obstacles.clear()
 
-	var plot_start := Vector2(430, 330)
+	var plot_start := Vector2(780, 286)
 	for row in range(2):
 		for col in range(3):
 			plots.append({
-				"rect": Rect2(plot_start + Vector2(col * 76, row * 58), Vector2(62, 44)),
+				"rect": Rect2(plot_start + Vector2(col * 92, row * 76), Vector2(78, 56)),
 				"state": CropState.UNTILLED,
 				"timer": 0.0,
 			})
 
 	trees = [
-		{"pos": Vector2(290, 230), "hp": 3},
-		{"pos": Vector2(330, 470), "hp": 3},
-		{"pos": Vector2(995, 210), "hp": 3},
-		{"pos": Vector2(1070, 462), "hp": 3},
+		{"pos": Vector2(256, 238), "hp": 3},
+		{"pos": Vector2(266, 548), "hp": 3},
+		{"pos": Vector2(1066, 236), "hp": 3},
+		{"pos": Vector2(1112, 512), "hp": 3},
 	]
 
 	obstacles = [
-		Rect2(Vector2(130, 238), Vector2(210, 150)),
-		Rect2(Vector2(760, 218), Vector2(210, 154)),
-		Rect2(Vector2(98, 96), Vector2(120, 92)),
-		Rect2(Vector2(1110, 126), Vector2(95, 336)),
+		Rect2(Vector2(156, 320), Vector2(246, 188)),
+		Rect2(Vector2(1010, 96), Vector2(166, 468)),
 	]
 
 
@@ -196,7 +212,8 @@ func _update_player(delta: float) -> void:
 
 	if input_vector.length() > 1.0:
 		input_vector = input_vector.normalized()
-	if input_vector.length() > 0.01:
+	player_is_moving = input_vector.length() > 0.01
+	if player_is_moving:
 		player_facing = input_vector.normalized()
 		var target_position := player_position + input_vector * PLAYER_SPEED * delta
 		if _can_move_to(target_position):
@@ -460,21 +477,11 @@ func _log(message: String) -> void:
 
 
 func _draw_world() -> void:
+	if homestead_base != null:
+		draw_texture_rect(homestead_base, Rect2(Vector2.ZERO, SCREEN_SIZE), false)
+		return
 	draw_rect(Rect2(Vector2.ZERO, SCREEN_SIZE), Color("#243647"))
 	draw_rect(Rect2(Vector2(70, 88), Vector2(1040, 540)), Color("#87b86c"))
-	draw_rect(Rect2(Vector2(92, 112), Vector2(996, 494)), Color("#a5c97b"))
-	draw_rect(Rect2(Vector2(1090, 86), Vector2(130, 542)), Color("#30405a"))
-
-	for i in range(7):
-		var x := 1112.0 + i * 18.0
-		draw_line(Vector2(x, 104), Vector2(x + 66, 610), Color("#61705a"), 8.0)
-
-	draw_line(Vector2(235, 470), Vector2(1110, 480), Color("#d0ae72"), 42.0)
-	draw_line(Vector2(250, 470), Vector2(1080, 480), Color("#bd955a"), 28.0)
-	draw_line(Vector2(552, 352), Vector2(642, 480), Color("#d0ae72"), 34.0)
-	draw_line(Vector2(560, 352), Vector2(642, 480), Color("#bd955a"), 22.0)
-
-	draw_rect(Rect2(Vector2(92, 112), Vector2(996, 494)), Color("#f8d77a"), false, 3.0)
 	draw_circle(Vector2(1088, 164), 22.0, Color("#ffe28a"))
 	draw_circle(Vector2(1088, 164), 44.0, Color(1.0, 0.76, 0.24, 0.14))
 	draw_circle(Vector2(1088, 544), 22.0, Color("#ffe28a"))
@@ -485,10 +492,15 @@ func _draw_plots() -> void:
 	for plot in plots:
 		var rect := plot["rect"] as Rect2
 		var state := int(plot["state"])
-		if props_sheet != null:
-			_draw_props_cell(clampi(state + 2, 2, 6), Rect2(rect.position + Vector2(-8, -18), Vector2(78, 68)))
+		var plot_texture := farm_plot_textures.get(state) as Texture2D
+		if plot_texture != null:
+			draw_texture_rect(plot_texture, Rect2(rect.position + Vector2(-20, -36), Vector2(118, 88)), false)
 			if state == CropState.MATURE:
-				draw_rect(rect.grow(4), Color("#fff0a6"), false, 3.0)
+				draw_rect(rect.grow(8), Color("#fff0a6"), false, 3.0)
+			continue
+		if state == CropState.UNTILLED:
+			draw_polygon(_diamond_points(rect), [Color(0.46, 0.33, 0.22, 0.28)])
+			draw_polygon(_diamond_points(rect.grow(-7)), [Color(0.62, 0.48, 0.33, 0.22)])
 			continue
 		draw_polygon([
 			rect.position + Vector2(rect.size.x * 0.5, 0),
@@ -516,16 +528,13 @@ func _draw_plots() -> void:
 
 
 func _draw_interactive_props() -> void:
-	if buildings_sheet != null:
-		_draw_building_cell(0, Rect2(Vector2(96, 204), Vector2(260, 220)))
-		_draw_building_cell(1, Rect2(Vector2(735, 172), Vector2(280, 235)))
-		_draw_building_cell(2, Rect2(Vector2(120, 92), Vector2(150, 130)))
-		_draw_building_cell(3, Rect2(Vector2(1020, 92), Vector2(140, 160)))
+	if cabin_texture != null:
+		draw_texture_rect(cabin_texture, Rect2(Vector2(118, 258), Vector2(334, 334)), false)
 
 	for tree in trees:
 		var pos := tree["pos"] as Vector2
-		if props_sheet != null:
-			_draw_props_cell(0, Rect2(pos + Vector2(-56, -86), Vector2(112, 132)))
+		if tree_texture != null:
+			draw_texture_rect(tree_texture, Rect2(pos + Vector2(-58, -164), Vector2(116, 164)), false)
 		var distance := pos.distance_to(player_position)
 		if distance <= INTERACT_DISTANCE + 12.0:
 			draw_circle(pos + Vector2(0, 4), 36.0, Color(1.0, 0.92, 0.45, 0.16))
@@ -540,9 +549,10 @@ func _draw_player() -> void:
 	var bob := sin(Time.get_ticks_msec() / 120.0) * 2.0 if action_timer <= 0.0 else 0.0
 	var body_pos := player_position + Vector2(0, bob)
 	draw_circle(body_pos + Vector2(0, 22), 19.0, Color(0, 0, 0, 0.2))
-	if player_sheet != null:
-		var source := Rect2(Vector2.ZERO, Vector2(player_sheet.get_width() / 4.0, player_sheet.get_height() / 3.0))
-		draw_texture_rect_region(player_sheet, Rect2(body_pos + Vector2(-34, -70), Vector2(68, 92)), source)
+	var player_source := _get_player_source_rect()
+	var player_texture := player_walk_sheet if player_is_moving and player_walk_sheet != null else player_idle_sheet
+	if player_texture != null:
+		draw_texture_rect_region(player_texture, Rect2(body_pos + Vector2(-34, -78), Vector2(68, 86)), player_source)
 		if action_label_timer > 0.0:
 			draw_string(ThemeDB.fallback_font, body_pos + Vector2(-24, -80), action_label_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("#fff1a8"))
 		return
@@ -555,18 +565,24 @@ func _draw_player() -> void:
 		draw_string(ThemeDB.fallback_font, body_pos + Vector2(-24, -58), action_label_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("#fff1a8"))
 
 
-func _draw_building_cell(index: int, target: Rect2) -> void:
-	var cell_size := Vector2(buildings_sheet.get_width() / 2.0, buildings_sheet.get_height() / 2.0)
-	var col := index % 2
-	var row := index / 2
-	draw_texture_rect_region(buildings_sheet, target, Rect2(Vector2(col, row) * cell_size, cell_size))
+func _get_player_source_rect() -> Rect2:
+	if player_is_moving and player_walk_sheet != null:
+		var cell_size := Vector2(player_walk_sheet.get_width() / 4.0, player_walk_sheet.get_height() / 4.0)
+		var row := _get_walk_direction_row()
+		var col := int(Time.get_ticks_msec() / 150) % 4
+		return Rect2(Vector2(col, row) * cell_size, cell_size)
+	if player_idle_sheet != null:
+		var idle_cell_size := Vector2(player_idle_sheet.get_width() / 2.0, player_idle_sheet.get_height() / 2.0)
+		var idle_col := int(Time.get_ticks_msec() / 360) % 2
+		var idle_row := int(Time.get_ticks_msec() / 720) % 2
+		return Rect2(Vector2(idle_col, idle_row) * idle_cell_size, idle_cell_size)
+	return Rect2(Vector2.ZERO, Vector2(1, 1))
 
 
-func _draw_props_cell(index: int, target: Rect2) -> void:
-	var cell_size := Vector2(props_sheet.get_width() / 3.0, props_sheet.get_height() / 3.0)
-	var col := index % 3
-	var row := index / 3
-	draw_texture_rect_region(props_sheet, target, Rect2(Vector2(col, row) * cell_size, cell_size))
+func _get_walk_direction_row() -> int:
+	if absf(player_facing.x) > absf(player_facing.y):
+		return 1 if player_facing.x > 0.0 else 3
+	return 0 if player_facing.y > 0.0 else 2
 
 
 func _draw_action_effect() -> void:

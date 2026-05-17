@@ -1,0 +1,27 @@
+{
+  "run_id": "2026-05-17-homestead-v1",
+  "date": "2026-05-17",
+  "project": "Lantern Frontier / 灯火边境",
+  "perspective": "light 45-degree top-down",
+  "art_style": "clean hand-painted HD, stylized survival homestead, readable gameplay shapes",
+  "creative_source": "Image2 via local Cherry Studio OpenAI-compatible endpoint",
+  "skills": [
+    {
+      "name": "generate2dmap",
+      "source": "D:\\agent-sprite-forge\\skills\\generate2dmap\\SKILL.md"
+    },
+    {
+      "name": "generate2dsprite",
+      "source": "D:\\agent-sprite-forge\\skills\\generate2dsprite\\SKILL.md"
+    }
+  ],
+  "assets": [
+    "homestead_base",
+    "player_cabin",
+    "choppable_tree",
+    "farm_plot_states",
+    "player_guardian_idle",
+    "player_guardian_walk"
+  ]
+}
+

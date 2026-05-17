@@ -1,0 +1,28 @@
+Use case: stylized-concept
+Skill: generate2dsprite
+Asset type: prop
+Action: single
+View: 3/4
+Sheet: 2x2 prop pack
+Bundle: engine_atlas
+Anchor: center
+Art style: clean_hd / project-native
+
+Primary request:
+Generate a 2x2 sprite sheet of four farm plot state props for a light 45-degree top-down 2D homestead game. Each cell contains one compact diamond-shaped farm plot asset, matching the same scale and perspective.
+
+Cell layout:
+Top-left: tilled empty soil plot.
+Top-right: seeded plot with tiny pale sprouts.
+Bottom-left: watered growing plot with damp soil and young green medicinal herbs.
+Bottom-right: mature harvestable medicinal herb plot with fuller leaves and small warm glowing flowers.
+
+Style:
+Clean hand-painted HD 2D game props, slightly painterly, readable gameplay states, warm safe-zone accent colors, muted earth soil, consistent light 45-degree top-down perspective. Not pixel art, not photorealistic.
+
+Sprite constraints:
+Use an exact 2x2 grid. Keep each plot centered inside its cell with consistent scale, same bounding box, same perspective, and generous padding. Put the whole sheet on a perfectly flat solid #FF00FF chroma-key background. The background must be one uniform color with no shadows, gradients, texture, floor plane, borders, labels, numbers, or guide lines. No plot may touch cell edges. No text; no labels; no watermark.
+
+Avoid:
+No tools, no hands, no characters, no UI, no background scenery, no fences, no extra props.
+

@@ -1,0 +1,25 @@
+Use case: stylized-concept
+Skill: generate2dsprite
+Asset type: prop
+Action: single
+View: 3/4
+Sheet: 1x1 single asset
+Bundle: single_asset
+Anchor: feet
+Art style: clean_hd / project-native
+
+Primary request:
+Generate one standalone choppable tree sprite for a light 45-degree top-down 2D survival homestead game. It should be a resource node near the boundary of a human safe zone.
+
+Subject:
+A medium mutated edge-tree with a readable trunk, cuttable lower trunk area, twisted branches, and a compact canopy. It should look slightly changed by disaster: cool blue-green leaf tips, faint amber safe-zone light on one side, rough bark, but not monstrous. The silhouette must be clear enough that the player understands it can be chopped.
+
+Style:
+Clean hand-painted HD 2D game prop, slightly painterly, readable gameplay silhouette, consistent with a cozy-survival post-disaster homestead. Not pixel art, not photorealistic.
+
+Sprite constraints:
+Place exactly one complete tree centered on a perfectly flat solid #FF00FF chroma-key background. The background must be one uniform color with no shadows, gradients, texture, floor plane, or lighting variation. Keep generous magenta padding on all sides. The tree must not touch the image edges. No cast shadow outside the object; no text; no labels; no watermark.
+
+Avoid:
+No forest background, no grass patch, no extra trees, no monsters, no characters, no UI, no labels.
+

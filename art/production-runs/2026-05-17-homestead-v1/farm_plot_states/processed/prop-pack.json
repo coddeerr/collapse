@@ -1,0 +1,183 @@
+{
+  "input": "art\\production-runs\\2026-05-17-homestead-v1\\farm_plot_states\\raw.png",
+  "rows": 2,
+  "cols": 2,
+  "threshold": 80,
+  "edge_threshold": 140,
+  "component_mode": "largest",
+  "component_padding": 12,
+  "min_component_area": 300,
+  "edge_touch_margin": 0,
+  "accepted": [
+    {
+      "index": 0,
+      "label": "tilled",
+      "grid": [
+        0,
+        0
+      ],
+      "source_box": [
+        0,
+        0,
+        627,
+        627
+      ],
+      "component_mode": "largest",
+      "component_count": 1,
+      "selected_component_area": 113115,
+      "selected_component_bbox": [
+        58,
+        152,
+        599,
+        523
+      ],
+      "crop_bbox": [
+        58,
+        152,
+        599,
+        523
+      ],
+      "padded_crop_bbox": [
+        46,
+        140,
+        611,
+        535
+      ],
+      "edge_touch": false,
+      "output_size": [
+        565,
+        395
+      ],
+      "status": "accepted",
+      "image": "art\\production-runs\\2026-05-17-homestead-v1\\farm_plot_states\\processed\\tilled\\prop.png"
+    },
+    {
+      "index": 1,
+      "label": "seeded",
+      "grid": [
+        0,
+        1
+      ],
+      "source_box": [
+        627,
+        0,
+        1254,
+        627
+      ],
+      "component_mode": "largest",
+      "component_count": 1,
+      "selected_component_area": 113093,
+      "selected_component_bbox": [
+        30,
+        152,
+        571,
+        523
+      ],
+      "crop_bbox": [
+        30,
+        152,
+        571,
+        523
+      ],
+      "padded_crop_bbox": [
+        18,
+        140,
+        583,
+        535
+      ],
+      "edge_touch": false,
+      "output_size": [
+        565,
+        395
+      ],
+      "status": "accepted",
+      "image": "art\\production-runs\\2026-05-17-homestead-v1\\farm_plot_states\\processed\\seeded\\prop.png"
+    },
+    {
+      "index": 2,
+      "label": "watered",
+      "grid": [
+        1,
+        0
+      ],
+      "source_box": [
+        0,
+        627,
+        627,
+        1254
+      ],
+      "component_mode": "largest",
+      "component_count": 1,
+      "selected_component_area": 113496,
+      "selected_component_bbox": [
+        60,
+        89,
+        600,
+        463
+      ],
+      "crop_bbox": [
+        60,
+        89,
+        600,
+        463
+      ],
+      "padded_crop_bbox": [
+        48,
+        77,
+        612,
+        475
+      ],
+      "edge_touch": false,
+      "output_size": [
+        564,
+        398
+      ],
+      "status": "accepted",
+      "image": "art\\production-runs\\2026-05-17-homestead-v1\\farm_plot_states\\processed\\watered\\prop.png"
+    },
+    {
+      "index": 3,
+      "label": "mature",
+      "grid": [
+        1,
+        1
+      ],
+      "source_box": [
+        627,
+        627,
+        1254,
+        1254
+      ],
+      "component_mode": "largest",
+      "component_count": 1,
+      "selected_component_area": 118226,
+      "selected_component_bbox": [
+        31,
+        66,
+        571,
+        463
+      ],
+      "crop_bbox": [
+        31,
+        66,
+        571,
+        463
+      ],
+      "padded_crop_bbox": [
+        19,
+        54,
+        583,
+        475
+      ],
+      "edge_touch": false,
+      "output_size": [
+        564,
+        421
+      ],
+      "status": "accepted",
+      "image": "art\\production-runs\\2026-05-17-homestead-v1\\farm_plot_states\\processed\\mature\\prop.png"
+    }
+  ],
+  "rejected": [],
+  "edge_touch_props": []
+}

@@ -1,0 +1,25 @@
+Use case: stylized-concept
+Skill: generate2dsprite
+Asset type: prop
+Action: single
+View: 3/4
+Sheet: 1x1 single asset
+Bundle: single_asset
+Anchor: bottom
+Art style: clean_hd / project-native
+
+Primary request:
+Generate one standalone player cabin building sprite for a light 45-degree top-down 2D game. It belongs to a small human safe homestead on a mutated post-disaster Earth.
+
+Subject:
+A compact survivor cabin made from repaired wood, patched metal, canvas, and warm amber window light. It should feel handmade, lived-in, and defensible, but still cozy. The silhouette must be readable from gameplay camera distance. Include a visible front doorway facing slightly down toward the camera.
+
+Style:
+Clean hand-painted HD 2D game prop, slightly painterly, readable shapes, warm safe-zone amber highlights, muted moss green and weathered brown materials, subtle cool polluted-world wear. Not pixel art, not photorealistic.
+
+Sprite constraints:
+Place exactly one complete cabin centered on a perfectly flat solid #FF00FF chroma-key background. The background must be one uniform color with no shadows, gradients, texture, floor plane, or lighting variation. Keep generous magenta padding on all sides. The cabin must not touch the image edges. No cast shadow outside the object; no text; no labels; no watermark.
+
+Avoid:
+No extra trees, fences, people, monsters, UI, icons, text, multiple buildings, or background scenery.
+

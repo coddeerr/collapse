@@ -1,0 +1,27 @@
+Use case: stylized-concept
+Skill: generate2dmap
+Asset type: foundation-only layered raster game map base
+Map mode: scene_mode
+Visual model: layered_raster
+Runtime object model: y_sorted_props + interactive_scene_objects
+Collision model: precise_shapes + trigger_zones
+Engine target: project-native Godot
+
+Primary request:
+Create a foundation-only 2D game map base for a small human safe homestead in a mutated post-disaster Earth. The camera is a light 45-degree top-down view, not full isometric. The map is for a playable cozy survival prototype where separate runtime props will be placed later.
+
+Scene/backdrop:
+A compact livable green safe zone surrounded by darker mutated wilderness. Include readable ground materials: grass, worn dirt paths, a few empty build pads, farm-soil pads, and the circular foundation where a safety lantern tower could stand. The right edge should hint at contaminated forest boundary with darker bluish vegetation, but it must remain ground/foundation only.
+
+Style/medium:
+Clean hand-painted HD 2D game art, slightly painterly, readable silhouettes, soft brush texture, quiet survival-cozy mood, not pixel art, not photorealistic. Use the established Lantern Frontier direction: warm safe-zone greens and amber path accents contrasted with cool polluted blue-green boundary tones.
+
+Composition/framing:
+Exact 16:9 game map composition, light 45-degree overhead view, designed for a 1280x720 viewport. Keep the central and lower-middle area open for a player character to walk. Use natural path curves and build-pad shapes that are obvious but not labeled.
+
+Layer separation constraints:
+This is the runtime foundation/base layer only. Do not include buildings, cabins, shops, trees, shrubs, fences, crates, crops, doors, characters, monsters, tools, UI, text, labels, arrows, signs, icons, markers, callouts, or any tall object. Do not draw anything that should later be collidable, harvestable, chopped, built, animated, y-sorted, replaced, or interacted with as an independent object.
+
+Avoid:
+No baked props, no structures, no characters, no text, no UI, no labels, no grid overlay, no arrows, no dark unreadable noise, no single-color flat placeholder look.
+

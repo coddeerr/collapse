@@ -1,0 +1,13 @@
+Generate a 4x4 directional walking animation sheet for a teenage homestead guardian hero in a light 45-degree top-down 2D game.
+
+Character: a 14 to 16 year old survivor guardian apprentice, slim and agile, youthful face, no beard, no adult body, short messy hair, slightly oversized patched field jacket, simple scarf, small backpack, gloves, boots, small amber lantern charm. Keep the same identity in all 16 frames.
+
+Directions: four rows, four frames per row. Row 1 down-facing walk, row 2 right-facing walk, row 3 up-facing walk, row 4 left-facing walk.
+
+Style: clean hand-painted HD 2D game sprite, readable at small gameplay size, cozy-survival post-disaster homestead tone, not photorealistic, not pixel art, not portrait art.
+
+Critical grid constraints: exact 4x4 grid on a perfectly flat solid #FF00FF chroma-key background. Each frame must have generous empty magenta padding. Put the entire character inside only the central 55% of each cell. Keep feet on the same bottom anchor line in each row. No part of the body, hair, scarf, backpack, lantern, boots, hands, or weapon may come close to or touch any cell edge. The character should be smaller than usual inside each cell to preserve padding.
+
+Weapon constraint: if a short blade or hatchet is visible, keep it vertical or close to the torso. Do not extend the weapon sideways. Do not draw attack poses.
+
+Avoid: no beard, no adult face, no bulky adult body, no military armor, no sci-fi suit, no large weapon swing, no attack effect, no projectiles, no dust, no extra characters, no UI, no labels, no text, no watermark, no guide lines, no background scenery.

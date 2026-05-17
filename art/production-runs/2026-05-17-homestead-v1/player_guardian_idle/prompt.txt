@@ -1,0 +1,29 @@
+Use case: stylized-concept
+Skill: generate2dsprite
+Asset type: player
+Action: idle
+View: 3/4
+Sheet: 2x2
+Frames: 4
+Bundle: hero_action_bundle
+Anchor: feet
+Art style: clean_hd / project-native
+
+Primary request:
+Generate a 2x2 four-frame idle animation sheet for the controllable hero of a light 45-degree top-down 2D game. The hero is the guardian of a small human safe homestead on a mutated post-disaster Earth.
+
+Character identity:
+A practical survivor guardian, adult, compact readable silhouette, travel coat or padded field jacket, scarf or hood, small backpack, work gloves, boots, and a simple one-handed tool/weapon strapped close to the body. Warm amber lantern charm on the belt or chest. The character should feel capable and humane, not military sci-fi.
+
+Animation:
+Four subtle idle frames: breathing, slight weight shift, tiny cloth/scarf motion. Body-only animation. No attack slash, no spell effects, no dust, no detached FX.
+
+Style:
+Clean hand-painted HD 2D game character sprite, readable at small size, light 45-degree top-down view, slightly painterly, consistent with the Lantern Frontier homestead assets. Not pixel art, not photorealistic.
+
+Sprite constraints:
+Use an exact 2x2 grid. Same character identity in every frame. Keep the body centered in every cell, full body inside the central 60% to 70% safe area, consistent scale, stable feet/bottom anchor line, and generous padding. Put the whole sheet on a perfectly flat solid #FF00FF chroma-key background. The background must be one uniform color with no shadows, gradients, texture, borders, labels, guide lines, or floor plane. No limb, weapon, hair, scarf, or backpack may cross cell edges. No text; no labels; no watermark.
+
+Avoid:
+No large weapons swinging, no attack effect, no projectiles, no extra characters, no UI, no background scenery.
+
