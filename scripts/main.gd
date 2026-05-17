@@ -27,6 +27,7 @@ const CROP_GROW_TIME := 12.0
 const DAY_LENGTH := 150.0
 const ACTION_DURATION := 0.28
 const SKILL_DURATION := 0.46
+const HOMESTEAD_BACKGROUND_PATH := "res://art/maps/homestead_v0/homestead_background.png"
 
 const TOOLS := [
 	{"id": Tool.HOE, "name": "锄头", "hint": "开垦空地"},
@@ -50,6 +51,7 @@ var herbs := 0
 var wood := 0
 var action_label_timer := 0.0
 var action_label_text := ""
+var homestead_background: Texture2D
 
 var plots: Array[Dictionary] = []
 var trees: Array[Dictionary] = []
@@ -62,6 +64,8 @@ var log_label: Label
 
 
 func _ready() -> void:
+	if ResourceLoader.exists(HOMESTEAD_BACKGROUND_PATH):
+		homestead_background = load(HOMESTEAD_BACKGROUND_PATH) as Texture2D
 	_setup_world()
 	_setup_ui()
 	_log("欢迎来到灯火边境家园原型。WASD 移动，滚轮切换工具，左键或空格使用。")
@@ -99,8 +103,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _draw() -> void:
 	_draw_world()
 	_draw_plots()
-	_draw_trees()
-	_draw_buildings()
+	_draw_interactive_props()
 	_draw_player()
 	_draw_action_effect()
 	_draw_day_overlay()
@@ -452,6 +455,14 @@ func _log(message: String) -> void:
 
 
 func _draw_world() -> void:
+	if homestead_background != null:
+		draw_texture_rect(homestead_background, Rect2(Vector2.ZERO, SCREEN_SIZE), false)
+		draw_rect(Rect2(Vector2.ZERO, SCREEN_SIZE), Color(0.06, 0.08, 0.1, 0.08))
+	else:
+		_draw_placeholder_world()
+
+
+func _draw_placeholder_world() -> void:
 	draw_rect(Rect2(Vector2.ZERO, SCREEN_SIZE), Color("#243647"))
 	draw_rect(Rect2(Vector2(70, 88), Vector2(1040, 540)), Color("#87b86c"))
 	draw_rect(Rect2(Vector2(92, 112), Vector2(996, 494)), Color("#a5c97b"))
@@ -502,32 +513,17 @@ func _draw_plots() -> void:
 				draw_rect(rect.grow(4), Color("#fff0a6"), false, 3.0)
 
 
-func _draw_trees() -> void:
+func _draw_interactive_props() -> void:
 	for tree in trees:
 		var pos := tree["pos"] as Vector2
-		draw_rect(Rect2(pos + Vector2(-9, 8), Vector2(18, 38)), Color("#6e4a2d"))
-		draw_circle(pos + Vector2(0, -12), 34.0, Color("#385f4a"))
-		draw_circle(pos + Vector2(-22, 0), 25.0, Color("#477350"))
-		draw_circle(pos + Vector2(22, 2), 25.0, Color("#2f5745"))
-		draw_circle(pos + Vector2(16, -23), 8.0, Color("#81d28a"))
+		var distance := pos.distance_to(player_position)
+		if distance <= INTERACT_DISTANCE + 12.0:
+			draw_circle(pos + Vector2(0, 4), 36.0, Color(1.0, 0.92, 0.45, 0.16))
+			draw_arc(pos + Vector2(0, 4), 38.0, 0.0, TAU, 28, Color("#ffe88a"), 3.0)
 
-
-func _draw_buildings() -> void:
-	_draw_house(Vector2(205, 300), Vector2(210, 150), Color("#8d5b43"), Color("#d99659"))
-	_draw_house(Vector2(865, 292), Vector2(210, 154), Color("#70508a"), Color("#bb7ed0"))
-	_draw_house(Vector2(158, 142), Vector2(120, 92), Color("#526a74"), Color("#88a6a5"))
-
-
-func _draw_house(center: Vector2, size: Vector2, wall_color: Color, roof_color: Color) -> void:
-	var base := Rect2(center - size * 0.5, size)
-	draw_rect(Rect2(base.position + Vector2(0, 28), Vector2(size.x, size.y - 28)), wall_color)
-	draw_polygon([
-		base.position + Vector2(-16, 36),
-		base.position + Vector2(size.x * 0.5, -30),
-		base.position + Vector2(size.x + 16, 36),
-	], [roof_color])
-	draw_rect(Rect2(center + Vector2(-18, 30), Vector2(36, 46)), Color("#463324"))
-	draw_rect(base, Color("#3d2c25"), false, 3.0)
+	for obstacle in obstacles:
+		if obstacle.get_center().distance_to(player_position) < 140.0:
+			draw_rect(obstacle, Color(1.0, 0.86, 0.38, 0.08), false, 2.0)
 
 
 func _draw_player() -> void:
