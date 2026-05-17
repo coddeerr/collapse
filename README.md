@@ -58,6 +58,7 @@ godot_console.exe --headless --path . --quit
 - 核心气质：温暖废土童话、生物异变、幸存者安全区、夜晚防守。
 - 关键对比：村庄内的温暖灯光与村外污染生态形成强对比。
 - 概念图目录：`art/concepts/` 与 `art/style-exploration/`。
+- 运行时资产必须遵守 `AGENTS.md` 中的 `agent-sprite-forge` 生产规则，并在 `art/production-runs/` 留下记录。
 
 ## 当前原则
 
