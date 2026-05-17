@@ -1,0 +1,12 @@
+Generate one standalone small mutated boundary tree sprite for a light 45-degree top-down 2D homestead game.
+
+Role: reusable choppable resource tree. It should be visually different from a normal round tree: thinner, slightly leaning, with asymmetric branches, but still readable as a tree the player can chop.
+
+Subject: a lean edge-tree with a visible cuttable trunk, a few twisted branch clusters, compact canopy clumps, cool teal mutated leaves mixed with muted olive leaves, rough bark, subtle amber rim light. Smaller grounded map prop, not a big showcase tree.
+
+Perspective: light 45-degree top-down game prop, map-style, grounded. Show enough top canopy to match an overhead game map. Avoid front-facing portrait/tree illustration.
+
+Sprite constraints: exactly one complete tree centered on a perfectly flat solid #FF00FF chroma-key background. Uniform background, no shadows, no gradient, no texture, no floor plane. Keep generous padding. Tree must not touch edges.
+
+Avoid: no forest background, no grass patch, no extra trees, no monsters, no characters, no UI, no labels, no watermark.
+

@@ -1,0 +1,12 @@
+Generate a 2x2 four-frame body-only physical skill animation sheet for the teenage homestead guardian hero.
+
+Character: same youth guardian as current runtime hero: 14 to 16 years old, slim agile apprentice, youthful face, no beard, patched green field jacket, red/teal scarf, small backpack, boots, amber lantern charm. Keep identity and scale consistent.
+
+Action: short forward bracing / impact stance for a physical shockwave skill. The body leans and plants feet, arms brace close to the torso. Body-only animation. No shockwave ring, no dust cloud, no detached hit effect.
+
+Style: clean hand-painted HD 2D game sprite, readable at small gameplay size, light 45-degree top-down view, cozy-survival post-disaster tone.
+
+Grid constraints: exact 2x2 grid on flat solid #FF00FF background. Same character in every frame. Full body inside central 60% of each cell, stable feet/bottom anchor line, generous padding, no limb, scarf, backpack, or hair touches cell edges.
+
+Avoid: no adult face, no beard, no large effect, no projectile, no UI, no text, no labels, no background.
+

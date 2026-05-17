@@ -1,0 +1,12 @@
+Generate a 2x2 four-frame body-only melee attack animation sheet for the teenage homestead guardian hero.
+
+Character: same youth guardian as current runtime hero: 14 to 16 years old, slim agile apprentice, youthful face, no beard, short messy hair, patched green field jacket, red/teal scarf, small backpack, boots, small amber lantern charm. Keep identity and scale consistent.
+
+Action: quick close-range hatchet or short-blade swing. Body-only attack pose. The weapon must stay close to the body and not create a wide slash trail. No detached slash arc, no dust, no projectile, no impact burst.
+
+Style: clean hand-painted HD 2D game sprite, readable at small gameplay size, light 45-degree top-down view, cozy-survival post-disaster tone.
+
+Grid constraints: exact 2x2 grid on flat solid #FF00FF background. Same character in every frame. Full body inside central 60% of each cell, stable feet/bottom anchor line, generous padding, no limb, weapon, scarf, backpack, or hair touches cell edges.
+
+Avoid: no adult face, no beard, no giant weapon trail, no magic effect, no UI, no text, no labels, no background.
+

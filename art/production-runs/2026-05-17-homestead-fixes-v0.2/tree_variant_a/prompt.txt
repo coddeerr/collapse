@@ -1,0 +1,12 @@
+Generate one standalone small-to-medium mutated edge tree sprite for a light 45-degree top-down 2D homestead game.
+
+Role: reusable choppable resource tree near a human safe zone. It must match a clean hand-painted HD map base, not a front-facing illustration.
+
+Subject: a squat young mutated tree with a clear cuttable trunk, compact uneven canopy, blue-green leaf tips, muted moss green leaves, rough bark, and a faint warm amber highlight from the safe zone. Smaller and more grounded than a hero tree. The base should visually sit on the ground without a separate painted floor patch.
+
+Perspective: light 45-degree top-down game prop. Show a little top of the canopy and trunk base. Avoid straight front-view poster composition.
+
+Sprite constraints: exactly one complete tree centered on a perfectly flat solid #FF00FF chroma-key background. Uniform background, no shadows, no gradient, no texture, no floor plane. Keep generous padding. Tree must not touch edges.
+
+Avoid: no forest background, no grass patch, no extra trees, no monsters, no characters, no UI, no labels, no watermark.
+
