@@ -63,6 +63,8 @@ const TREE_COLLISION_RADIUS := 30.0
 
 var player_position := PLAYER_START
 var player_facing := Vector2(0, 1)
+var action_start_position := PLAYER_START
+var action_end_position := PLAYER_START
 var action_timer := 0.0
 var action_tool := Tool.HOE
 var action_facing := Vector2(0, 1)
@@ -286,7 +288,12 @@ func _update_day_cycle(delta: float) -> void:
 
 
 func _update_action(delta: float) -> void:
+	if action_tool == Tool.PHYSICAL and action_timer > 0.0:
+		var progress := _action_progress()
+		player_position = action_start_position.lerp(action_end_position, smoothstep(0.0, 1.0, progress))
 	action_timer = maxf(0.0, action_timer - delta)
+	if action_tool == Tool.PHYSICAL and action_timer <= 0.0:
+		player_position = action_end_position
 	action_label_timer = maxf(0.0, action_label_timer - delta)
 
 
@@ -322,6 +329,8 @@ func _start_action(tool: int) -> void:
 		return
 	action_tool = tool
 	action_facing = player_facing
+	action_start_position = player_position
+	action_end_position = player_position
 	action_timer = SKILL_DURATION if tool == Tool.PHYSICAL or tool == Tool.SPELL else ACTION_DURATION
 
 
@@ -397,7 +406,7 @@ func _perform_physical_skill() -> void:
 	_show_action_text("滑步斩")
 	var dash_target := player_position + action_facing.normalized() * 52.0
 	if _can_move_to(dash_target):
-		player_position = dash_target
+		action_end_position = dash_target
 	_log("释放物理技能：向前滑步挥砍。")
 
 
@@ -725,6 +734,8 @@ func _draw_player() -> void:
 	var player_source := _get_player_source_rect(player_texture)
 	if player_texture != null:
 		draw_texture_rect_region(player_texture, Rect2(body_pos + Vector2(-31, -82), Vector2(62, 88)), player_source)
+		if action_timer > 0.0 and (action_tool == Tool.AXE or action_tool == Tool.SWORD or action_tool == Tool.PHYSICAL):
+			_draw_sword_overlay(body_pos)
 		if action_label_timer > 0.0:
 			draw_string(ThemeDB.fallback_font, body_pos + Vector2(-24, -80), action_label_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("#fff1a8"))
 		return
@@ -740,16 +751,10 @@ func _draw_player() -> void:
 func _get_player_texture() -> Texture2D:
 	if action_timer > 0.0:
 		match action_tool:
-			Tool.AXE, Tool.SWORD:
-				if player_attack_sheet != null:
-					return player_attack_sheet
-			Tool.PHYSICAL:
-				if player_physical_sheet != null:
-					return player_physical_sheet
 			Tool.SPELL:
 				if player_cast_sheet != null:
 					return player_cast_sheet
-	if player_is_moving and player_walk_sheet != null:
+	if player_walk_sheet != null:
 		return player_walk_sheet
 	return player_idle_sheet
 
@@ -757,7 +762,7 @@ func _get_player_texture() -> Texture2D:
 func _get_player_source_rect(player_texture: Texture2D) -> Rect2:
 	if player_texture == null:
 		return Rect2(Vector2.ZERO, Vector2(1, 1))
-	if action_timer > 0.0 and (player_texture == player_attack_sheet or player_texture == player_physical_sheet or player_texture == player_cast_sheet):
+	if action_timer > 0.0 and player_texture == player_cast_sheet:
 		var action_cell_size := Vector2(player_texture.get_width() / 2.0, player_texture.get_height() / 2.0)
 		var duration := SKILL_DURATION if action_tool == Tool.PHYSICAL or action_tool == Tool.SPELL else ACTION_DURATION
 		var progress := clampf(1.0 - action_timer / duration, 0.0, 0.999)
@@ -766,7 +771,7 @@ func _get_player_source_rect(player_texture: Texture2D) -> Rect2:
 	if player_texture == player_walk_sheet:
 		var cell_size := Vector2(player_texture.get_width() / 4.0, player_texture.get_height() / 4.0)
 		var row := _get_walk_direction_row()
-		var col := int(Time.get_ticks_msec() / 170) % 4
+		var col := int(Time.get_ticks_msec() / 170) % 4 if player_is_moving and action_timer <= 0.0 else 0
 		return Rect2(Vector2(col, row) * cell_size, cell_size)
 	var idle_cell_size := Vector2(player_texture.get_width() / 2.0, player_texture.get_height() / 2.0)
 	var idle_col := int(Time.get_ticks_msec() / 360) % 2
@@ -778,6 +783,32 @@ func _get_walk_direction_row() -> int:
 	if absf(player_facing.x) > absf(player_facing.y):
 		return 1 if player_facing.x > 0.0 else 3
 	return 0 if player_facing.y > 0.0 else 2
+
+
+func _action_progress() -> float:
+	var duration := SKILL_DURATION if action_tool == Tool.PHYSICAL or action_tool == Tool.SPELL else ACTION_DURATION
+	if duration <= 0.0:
+		return 1.0
+	return clampf(1.0 - action_timer / duration, 0.0, 0.999)
+
+
+func _draw_sword_overlay(body_pos: Vector2) -> void:
+	var progress := _action_progress()
+	var forward := action_facing.normalized()
+	if forward.length() < 0.01:
+		forward = Vector2(0, 1)
+	var side := Vector2(-forward.y, forward.x)
+	var hand := body_pos + Vector2(0, -42) + side * 9.0 + forward * 8.0
+	var reach := 28.0 + 16.0 * sin(progress * PI)
+	var blade_tip := hand + forward * reach + side * lerpf(-14.0, 18.0, progress)
+	var blade_root := hand - forward * 4.0
+	var trail_tip := hand + forward * (reach * 0.78) + side * lerpf(-26.0, 22.0, progress)
+	var trail_back := hand + forward * 10.0 + side * lerpf(-10.0, 10.0, progress)
+	draw_line(trail_back, trail_tip, Color(1.0, 0.85, 0.36, 0.42), 11.0)
+	draw_line(trail_back, trail_tip, Color(1.0, 0.96, 0.70, 0.62), 5.0)
+	draw_line(blade_root, blade_tip, Color("#3e4650"), 7.0)
+	draw_line(blade_root, blade_tip, Color("#f4f2de"), 4.0)
+	draw_circle(blade_root, 4.0, Color("#6b4a28"))
 
 
 func _draw_action_effect() -> void:

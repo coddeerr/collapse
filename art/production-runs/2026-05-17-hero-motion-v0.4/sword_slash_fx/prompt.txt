@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Asset type: 2D game sword slash FX sprite sheet
+Primary request: Create a compact animated sword blade motion trail for a teenage wilderness guardian in a clean hand-painted HD 2D game.
+Style/medium: clean HD 2D game VFX, warm survival fantasy, crisp silhouette, controlled glow, no pixel-art chunkiness.
+Sheet: exactly 4 equal cells arranged in a 2x2 grid.
+Frames: wind-up glint, fast cutting arc, brightest slash crescent, fading follow-through.
+Subject: a short steel sword blade trail with warm pale gold edge light and a faint ember spark accent. The FX is body-layer friendly and should be compact enough to sit near a character hand.
+Composition/framing: each cell contains only the sword slash FX, centered, with generous padding. The slash travels left-to-right by default and can be rotated in the engine for other directions.
+Constraints: background is 100% solid flat #FF00FF, no gradients in the background. No character body, no hands, no UI, no text, no labels, no watermark, no borders between cells.
+Containment: the entire sword trail must fit fully inside each cell; no blade tip, spark, glow, or trail may cross a cell edge; same scale and same bounding box in every frame.
