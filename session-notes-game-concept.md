@@ -413,3 +413,43 @@ godot_console.exe --headless --path . --quit
 - `D:\collapse\art\style-exploration\style-02-polluted-boundary-dusk.png`
 - `D:\collapse\art\style-exploration\style-03-night-attack.png`
 - `D:\collapse\art\style-exploration\art-direction-v0.1.md`
+
+## 10. 家园原型开发计划与当前实现
+
+用户希望基于“灯火边境”美术框架，先做初始家园和主角，暂不做怪物攻城。
+
+### 10.1 当前实现范围
+
+已在 `D:\collapse\scripts\main.gd` 中改为家园原型：
+
+- 主角可操作移动，支持 8 个移动方向。
+- 基本村庄占位场景：轻 45 度表现、家屋、药剂店、道路、树木、污染边界、安全灯。
+- 基础碰撞：建筑、树木、场景边界。
+- 农田组件：开垦、播种、浇水、成熟、收获。
+- 工具栏：锄头、种子、水壶、斧头、短剑、物理技能、法术技能。
+- 鼠标滚轮或数字键 `1-7` 切换工具。
+- 鼠标左键或空格使用工具。
+- 主角动作占位：挥砍、物理冲击、星火法术。
+- 昼夜轮替效果。
+
+### 10.2 暂不做内容
+
+- 暂不做怪物攻城。
+- 暂不做怪物 AI。
+- 暂不做正式 spritesheet。
+- 暂不做复杂背包和装备属性。
+
+### 10.3 agent-sprite-forge 接入状态
+
+已尝试访问 GitHub 仓库：
+
+- `https://github.com/coddeerr/agent-sprite-forge.git`
+- `https://github.com/0x0funky/agent-sprite-forge.git`
+
+本机网络对 GitHub 连接超时或重置，因此暂未作为 submodule 引入。
+
+当前先在项目内新增：
+
+- `D:\collapse\tools\agent-sprite-forge-notes.md`
+
+用于记录后续用 `generate2dsprite` / `generate2dmap` 生成正式主角、地图、工具、技能特效的规范。
