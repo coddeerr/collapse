@@ -1,0 +1,10 @@
+Generate a 2x2 four-frame fireball projectile animation sheet for a 2D game.
+
+Projectile: compact lantern-fire fireball, warm orange core, yellow-white center, red-orange rim, a tiny ember tail. Same projectile identity and size in all four frames. The animation should loop as a pulsing traveling fireball.
+
+Style: clean hand-painted HD 2D game effect, readable over a detailed top-down map, crisp silhouette, controlled glow, not photorealistic, not pixel art.
+
+Grid constraints: exact 2x2 grid on flat solid #FF00FF background. Each cell contains one centered fireball projectile. Same size in every frame, only internal flame shape and glow pulse changes. Full projectile and tiny tail must stay inside central 55% of each cell with generous magenta padding. No cell edge touch.
+
+Avoid: no caster, no character, no impact explosion, no labels, no text, no UI, no border, no background scenery.
+

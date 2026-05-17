@@ -1,0 +1,155 @@
+{
+  "target": "asset",
+  "mode": "projectile",
+  "prompt": "",
+  "role": "",
+  "input": "art\\production-runs\\2026-05-17-motion-combat-v0.3\\fireball_projectile\\raw.png",
+  "threshold": 80,
+  "edge_threshold": 140,
+  "duration": 200,
+  "rows": 2,
+  "cols": 2,
+  "cell_size": 256,
+  "fit_scale": 0.74,
+  "trim_border": 4,
+  "edge_clean_depth": 2,
+  "align": "center",
+  "shared_scale": true,
+  "component_mode": "all",
+  "component_padding": 10,
+  "min_component_area": 80,
+  "edge_touch_margin": 0,
+  "frame_labels": [
+    "projectile-1",
+    "projectile-2",
+    "projectile-3",
+    "projectile-4"
+  ],
+  "frames": [
+    {
+      "grid": [
+        0,
+        0
+      ],
+      "source_box": [
+        0,
+        0,
+        627,
+        627
+      ],
+      "component_mode": "all",
+      "component_count": 4,
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "crop_bbox": [
+        156,
+        241,
+        486,
+        464
+      ],
+      "edge_touch": false,
+      "output_size": [
+        183,
+        123
+      ],
+      "paste_position": [
+        36,
+        66
+      ]
+    },
+    {
+      "grid": [
+        0,
+        1
+      ],
+      "source_box": [
+        627,
+        0,
+        1254,
+        627
+      ],
+      "component_mode": "all",
+      "component_count": 4,
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "crop_bbox": [
+        126,
+        230,
+        467,
+        479
+      ],
+      "edge_touch": false,
+      "output_size": [
+        189,
+        138
+      ],
+      "paste_position": [
+        33,
+        59
+      ]
+    },
+    {
+      "grid": [
+        1,
+        0
+      ],
+      "source_box": [
+        0,
+        627,
+        627,
+        1254
+      ],
+      "component_mode": "all",
+      "component_count": 3,
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "crop_bbox": [
+        155,
+        167,
+        493,
+        421
+      ],
+      "edge_touch": false,
+      "output_size": [
+        187,
+        141
+      ],
+      "paste_position": [
+        34,
+        57
+      ]
+    },
+    {
+      "grid": [
+        1,
+        1
+      ],
+      "source_box": [
+        627,
+        627,
+        1254,
+        1254
+      ],
+      "component_mode": "all",
+      "component_count": 4,
+      "selected_component_area": null,
+      "selected_component_bbox": null,
+      "crop_bbox": [
+        126,
+        192,
+        453,
+        412
+      ],
+      "edge_touch": false,
+      "output_size": [
+        181,
+        122
+      ],
+      "paste_position": [
+        37,
+        67
+      ]
+    }
+  ],
+  "edge_touch_frames": []
+}

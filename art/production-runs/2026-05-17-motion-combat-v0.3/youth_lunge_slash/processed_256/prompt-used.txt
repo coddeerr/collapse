@@ -1,0 +1,12 @@
+Generate a 2x2 four-frame body-only lunge slash animation sheet for the teenage homestead guardian hero.
+
+Character: same youth guardian as current runtime hero: 14 to 16 years old, slim agile apprentice, youthful face, no beard, patched green field jacket, scarf, small backpack, boots, amber lantern charm. Add a simple short sword as the main weapon, held close enough to preserve frame bounds.
+
+Action frames: frame 1 crouched preparation with sword close; frame 2 quick forward step/lunge; frame 3 compact slash strike with sword visible; frame 4 recovery stance. This replaces the old physical shockwave skill.
+
+Style: clean hand-painted HD 2D game sprite, readable at small gameplay size, light 45-degree top-down view, cozy-survival post-disaster tone.
+
+Grid constraints: exact 2x2 grid on flat solid #FF00FF background. Same character identity and scale in every frame. Body height should match current idle/walk scale. Feet/bottom anchor remains stable. Full body and sword inside central 60% to 70% of each cell, generous padding. No detached slash arc, no projectile, no dust cloud, no impact burst.
+
+Avoid: no adult face, no beard, no huge weapon trail, no magic effect, no UI, no text, no labels, no background.
+

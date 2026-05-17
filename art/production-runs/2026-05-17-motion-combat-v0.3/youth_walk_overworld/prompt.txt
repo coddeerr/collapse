@@ -1,0 +1,16 @@
+Generate a 4x4 directional overworld walking animation sheet for a teenage homestead guardian hero.
+
+Character: 14 to 16 year old survivor guardian apprentice, small readable overworld sprite proportions, slim agile body, youthful face, no beard, short messy hair, patched green field jacket, scarf, small backpack, boots, small amber lantern charm. Keep the same identity in all frames, but simplify details for small map readability.
+
+Directions and frames: four rows, four frames per row. Row 1 down-facing walk, row 2 right-facing walk, row 3 up-facing walk, row 4 left-facing walk. Each row should read as a clear walk cycle: frame 1 neutral stance, frame 2 left foot forward with opposite arm forward, frame 3 neutral passing pose, frame 4 right foot forward with opposite arm forward.
+
+Motion requirements: visibly swinging arms, visibly alternating legs, grounded feet, no sliding pose, no stiff mannequin pose. The legs and arms must change silhouette enough to be readable at small size. Keep movement compact and suitable for a top-down RPG map.
+
+Perspective: light 45-degree top-down / overworld game view, not side-view portrait, not tall illustration. Feet must feel planted on the ground.
+
+Style: clean hand-painted HD 2D game sprite, readable at small gameplay size, not photorealistic, not pixel art, not anime portrait.
+
+Grid constraints: exact 4x4 grid on flat solid #FF00FF background. Same scale and body height in every frame. Full body inside central 55% to 65% of each cell with generous magenta padding. Stable feet/bottom anchor line within each row. No limb, backpack, scarf, lantern, hair, or weapon may touch cell edges.
+
+Avoid: no adult body, no beard, no large weapon swing, no attack pose, no spell effect, no projectiles, no dust, no UI, no text, no labels, no background.
+

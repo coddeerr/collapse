@@ -25,7 +25,7 @@ enum PlacementMode {
 }
 
 const SCREEN_SIZE := Vector2(1280, 720)
-const PLAYER_SPEED := 155.0
+const PLAYER_SPEED := 125.0
 const PLAYER_RADIUS := 18.0
 const PLAYER_START := Vector2(650, 430)
 const INTERACT_DISTANCE := 74.0
@@ -45,6 +45,7 @@ const PLAYER_WALK_PATH := "res://art/sprites/player/guardian_youth/walk.png"
 const PLAYER_ATTACK_PATH := "res://art/sprites/player/guardian_youth/attack.png"
 const PLAYER_PHYSICAL_PATH := "res://art/sprites/player/guardian_youth/physical.png"
 const PLAYER_CAST_PATH := "res://art/sprites/player/guardian_youth/cast.png"
+const FIREBALL_PATH := "res://art/effects/fireball/fireball.png"
 const TREE_VARIANT_PATHS := [
 	"res://art/sprites/props/choppable_tree/tree.png",
 	"res://art/sprites/props/choppable_tree/tree_variant_a.png",
@@ -56,6 +57,7 @@ const CABIN_VISUAL_SIZE := Vector2(184, 184)
 const CABIN_FOOTPRINT := Vector2(118, 78)
 const FARM_VISUAL_SIZE := Vector2(112, 84)
 const FARM_FOOTPRINT := Vector2(84, 56)
+const CABIN_SNAP := Vector2(14, 14)
 const TREE_VISUAL_SIZE := Vector2(86, 122)
 const TREE_COLLISION_RADIUS := 30.0
 
@@ -80,12 +82,14 @@ var player_walk_sheet: Texture2D
 var player_attack_sheet: Texture2D
 var player_physical_sheet: Texture2D
 var player_cast_sheet: Texture2D
+var fireball_sheet: Texture2D
 var farm_plot_textures: Dictionary = {}
 var tree_textures: Array[Texture2D] = []
 
 var plots: Array[Dictionary] = []
 var trees: Array[Dictionary] = []
 var cabins: Array[Dictionary] = []
+var projectiles: Array[Dictionary] = []
 
 var resource_label: Label
 var tool_label: Label
@@ -101,6 +105,7 @@ func _ready() -> void:
 	player_attack_sheet = load(PLAYER_ATTACK_PATH) as Texture2D if ResourceLoader.exists(PLAYER_ATTACK_PATH) else null
 	player_physical_sheet = load(PLAYER_PHYSICAL_PATH) as Texture2D if ResourceLoader.exists(PLAYER_PHYSICAL_PATH) else null
 	player_cast_sheet = load(PLAYER_CAST_PATH) as Texture2D if ResourceLoader.exists(PLAYER_CAST_PATH) else null
+	fireball_sheet = load(FIREBALL_PATH) as Texture2D if ResourceLoader.exists(FIREBALL_PATH) else null
 	tree_textures.clear()
 	for path in TREE_VARIANT_PATHS:
 		if ResourceLoader.exists(path):
@@ -121,6 +126,7 @@ func _process(delta: float) -> void:
 	_update_crops(delta)
 	_update_day_cycle(delta)
 	_update_action(delta)
+	_update_projectiles(delta)
 	_update_ui()
 	queue_redraw()
 
@@ -165,6 +171,7 @@ func _draw() -> void:
 	_draw_placement_preview()
 	_draw_player()
 	_draw_action_effect()
+	_draw_projectiles()
 	_draw_day_overlay()
 
 
@@ -172,6 +179,7 @@ func _setup_world() -> void:
 	plots.clear()
 	trees.clear()
 	cabins.clear()
+	projectiles.clear()
 
 	trees = [
 		{"pos": Vector2(238, 244), "hp": 3, "variant": 0, "scale": 0.86, "flip": false},
@@ -282,6 +290,16 @@ func _update_action(delta: float) -> void:
 	action_label_timer = maxf(0.0, action_label_timer - delta)
 
 
+func _update_projectiles(delta: float) -> void:
+	var active_projectiles: Array[Dictionary] = []
+	for projectile in projectiles:
+		projectile["pos"] = (projectile["pos"] as Vector2) + (projectile["vel"] as Vector2) * delta
+		projectile["life"] = float(projectile["life"]) - delta
+		if float(projectile["life"]) > 0.0:
+			active_projectiles.append(projectile)
+	projectiles = active_projectiles
+
+
 func _update_ui() -> void:
 	resource_label.text = "第 %d 天  %s\n药草 %d | 木材 %d | 农田：%s" % [
 		day_count,
@@ -292,7 +310,7 @@ func _update_ui() -> void:
 	]
 
 	if placement_mode == PlacementMode.NONE:
-		tool_label.text = "建造：B 木屋 | F 农田\n战斗：J/空格 挥砍 | K 冲击 | L 星火"
+		tool_label.text = "建造：B 木屋 | F 农田\n战斗：J/空格 挥砍 | K 滑步斩 | L 火球"
 	else:
 		tool_label.text = "放置中：%s  旋转 Q/E\n左键确认，右键或 Esc 取消" % _placement_name()
 
@@ -376,13 +394,21 @@ func _perform_sword_attack() -> void:
 
 
 func _perform_physical_skill() -> void:
-	_show_action_text("冲击")
-	_log("释放物理技能：短距离冲击。")
+	_show_action_text("滑步斩")
+	var dash_target := player_position + action_facing.normalized() * 52.0
+	if _can_move_to(dash_target):
+		player_position = dash_target
+	_log("释放物理技能：向前滑步挥砍。")
 
 
 func _perform_spell_skill() -> void:
-	_show_action_text("星火")
-	_log("释放法术技能：安全灯火的余烬。")
+	_show_action_text("火球")
+	projectiles.append({
+		"pos": player_position + action_facing.normalized() * 36.0 + Vector2(0, -34),
+		"vel": action_facing.normalized() * 360.0,
+		"life": 0.75,
+	})
+	_log("释放法术技能：灯火火球。")
 
 
 func _plot_at(screen_position: Vector2) -> Dictionary:
@@ -423,22 +449,24 @@ func _rotate_placement(direction: int) -> void:
 
 
 func _try_place_at(position: Vector2) -> void:
-	if not _is_placement_valid(position):
+	var snapped_position := _placement_position(position)
+	if not _is_placement_valid(snapped_position):
 		_show_action_text("不可建造")
 		_log("这里不能建造：需要在安全区内，且不能和已有物体重叠。")
 		return
 	match placement_mode:
 		PlacementMode.CABIN:
 			cabins.append({
-				"pos": position,
+				"pos": snapped_position,
 				"rotation": placement_rotation,
 			})
 			_log("木屋地基已经确定，开始建造。")
 		PlacementMode.FARM:
 			plots.append({
-				"rect": _farm_rect(position),
+				"rect": _farm_rect(snapped_position, placement_rotation),
 				"state": CropState.UNTILLED,
 				"timer": 0.0,
+				"rotation": placement_rotation,
 			})
 			_log("新的农田已经规划完成，点击它开始开垦。")
 	placement_mode = PlacementMode.NONE
@@ -457,7 +485,7 @@ func _is_placement_valid(position: Vector2) -> bool:
 			return false
 	for plot in plots:
 		var plot_rect := plot["rect"] as Rect2
-		if footprint.intersects(plot_rect.grow(8.0)):
+		if footprint.intersects(plot_rect.grow(-1.0)):
 			return false
 	for tree in trees:
 		var tree_pos := tree["pos"] as Vector2
@@ -469,14 +497,38 @@ func _is_placement_valid(position: Vector2) -> bool:
 
 func _placement_footprint(position: Vector2) -> Rect2:
 	if placement_mode == PlacementMode.CABIN:
-		return Rect2(position - CABIN_FOOTPRINT * 0.5, CABIN_FOOTPRINT)
+		return _cabin_rect(position, placement_rotation)
 	if placement_mode == PlacementMode.FARM:
-		return _farm_rect(position)
+		return _farm_rect(position, placement_rotation)
 	return Rect2(position, Vector2.ZERO)
 
 
-func _farm_rect(position: Vector2) -> Rect2:
-	return Rect2(position - FARM_FOOTPRINT * 0.5, FARM_FOOTPRINT)
+func _placement_position(raw_position: Vector2) -> Vector2:
+	if placement_mode == PlacementMode.FARM:
+		var size := _rotated_size(FARM_FOOTPRINT, placement_rotation)
+		var relative := raw_position - SAFE_BUILD_AREA.position - size * 0.5
+		var cell := Vector2(round(relative.x / size.x), round(relative.y / size.y))
+		return SAFE_BUILD_AREA.position + cell * size + size * 0.5
+	if placement_mode == PlacementMode.CABIN:
+		var size := _rotated_size(CABIN_FOOTPRINT, placement_rotation)
+		var relative := raw_position - SAFE_BUILD_AREA.position - size * 0.5
+		var cell := Vector2(round(relative.x / CABIN_SNAP.x), round(relative.y / CABIN_SNAP.y))
+		return SAFE_BUILD_AREA.position + cell * CABIN_SNAP + size * 0.5
+	return raw_position
+
+
+func _rotated_size(size: Vector2, rotation_index: int) -> Vector2:
+	return Vector2(size.y, size.x) if rotation_index % 2 == 1 else size
+
+
+func _farm_rect(position: Vector2, rotation_index: int = 0) -> Rect2:
+	var size := _rotated_size(FARM_FOOTPRINT, rotation_index)
+	return Rect2(position - size * 0.5, size)
+
+
+func _cabin_rect(position: Vector2, rotation_index: int = 0) -> Rect2:
+	var size := _rotated_size(CABIN_FOOTPRINT, rotation_index)
+	return Rect2(position - size * 0.5, size)
 
 
 func _get_blocking_rects() -> Array[Rect2]:
@@ -485,7 +537,7 @@ func _get_blocking_rects() -> Array[Rect2]:
 	]
 	for cabin in cabins:
 		var pos := cabin["pos"] as Vector2
-		blockers.append(Rect2(pos - CABIN_FOOTPRINT * 0.5, CABIN_FOOTPRINT))
+		blockers.append(_cabin_rect(pos, int(cabin.get("rotation", 0))))
 	return blockers
 
 
@@ -567,9 +619,12 @@ func _draw_plots() -> void:
 	for plot in plots:
 		var rect := plot["rect"] as Rect2
 		var state := int(plot["state"])
+		var rotation := int(plot.get("rotation", 0))
 		var plot_texture := farm_plot_textures.get(state) as Texture2D
 		if plot_texture != null:
-			draw_texture_rect(plot_texture, Rect2(rect.get_center() - FARM_VISUAL_SIZE * 0.5, FARM_VISUAL_SIZE), false)
+			draw_set_transform(rect.get_center(), float(rotation) * PI * 0.5, Vector2.ONE)
+			draw_texture_rect(plot_texture, Rect2(-FARM_VISUAL_SIZE * 0.5, FARM_VISUAL_SIZE), false)
+			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 			if state == CropState.MATURE:
 				draw_rect(rect.grow(8), Color("#fff0a6"), false, 3.0)
 			elif rect.grow(18.0).has_point(get_viewport().get_mouse_position()):
@@ -610,8 +665,9 @@ func _draw_interactive_props() -> void:
 	for cabin in cabins:
 		if cabin_texture != null:
 			var pos := cabin["pos"] as Vector2
-			var rotation := float(int(cabin.get("rotation", 0))) * PI * 0.5
-			draw_set_transform(pos, rotation, Vector2.ONE)
+			# Cabin art needs authored directional views. For now, rotate only
+			# the footprint and keep the visible cabin on its best-facing view.
+			draw_set_transform(pos, 0.0, Vector2.ONE)
 			draw_texture_rect(cabin_texture, Rect2(-CABIN_VISUAL_SIZE * 0.5, CABIN_VISUAL_SIZE), false)
 			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
@@ -642,7 +698,7 @@ func _draw_interactive_props() -> void:
 func _draw_placement_preview() -> void:
 	if placement_mode == PlacementMode.NONE:
 		return
-	var mouse_pos := get_viewport().get_mouse_position()
+	var mouse_pos := _placement_position(get_viewport().get_mouse_position())
 	var footprint := _placement_footprint(mouse_pos)
 	var valid := _is_placement_valid(mouse_pos)
 	var color := Color(0.20, 0.95, 0.38, 0.34) if valid else Color(1.0, 0.18, 0.16, 0.34)
@@ -650,12 +706,13 @@ func _draw_placement_preview() -> void:
 	draw_rect(footprint, color, true)
 	draw_rect(footprint, outline, false, 3.0)
 	if placement_mode == PlacementMode.CABIN and cabin_texture != null:
-		var rotation := float(placement_rotation) * PI * 0.5
-		draw_set_transform(mouse_pos, rotation, Vector2.ONE)
+		draw_set_transform(mouse_pos, 0.0, Vector2.ONE)
 		draw_texture_rect(cabin_texture, Rect2(-CABIN_VISUAL_SIZE * 0.5, CABIN_VISUAL_SIZE), false, Color(1.0, 1.0, 1.0, 0.48))
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	elif placement_mode == PlacementMode.FARM:
-		draw_polygon(_diamond_points(footprint), [Color(color.r, color.g, color.b, 0.42)])
+		draw_set_transform(mouse_pos, float(placement_rotation) * PI * 0.5, Vector2.ONE)
+		draw_polygon(_diamond_points(Rect2(-FARM_FOOTPRINT * 0.5, FARM_FOOTPRINT)), [Color(color.r, color.g, color.b, 0.42)])
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
 func _draw_player() -> void:
@@ -667,7 +724,7 @@ func _draw_player() -> void:
 	var player_texture := _get_player_texture()
 	var player_source := _get_player_source_rect(player_texture)
 	if player_texture != null:
-		draw_texture_rect_region(player_texture, Rect2(body_pos + Vector2(-31, -86), Vector2(62, 88)), player_source)
+		draw_texture_rect_region(player_texture, Rect2(body_pos + Vector2(-31, -82), Vector2(62, 88)), player_source)
 		if action_label_timer > 0.0:
 			draw_string(ThemeDB.fallback_font, body_pos + Vector2(-24, -80), action_label_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("#fff1a8"))
 		return
@@ -709,7 +766,7 @@ func _get_player_source_rect(player_texture: Texture2D) -> Rect2:
 	if player_texture == player_walk_sheet:
 		var cell_size := Vector2(player_texture.get_width() / 4.0, player_texture.get_height() / 4.0)
 		var row := _get_walk_direction_row()
-		var col := int(Time.get_ticks_msec() / 220) % 4
+		var col := int(Time.get_ticks_msec() / 170) % 4
 		return Rect2(Vector2(col, row) * cell_size, cell_size)
 	var idle_cell_size := Vector2(player_texture.get_width() / 2.0, player_texture.get_height() / 2.0)
 	var idle_col := int(Time.get_ticks_msec() / 360) % 2
@@ -733,13 +790,28 @@ func _draw_action_effect() -> void:
 			var radius := 30.0 + progress * 18.0
 			draw_arc(origin, radius, -1.2, 1.2, 18, Color("#fff0b2"), 6.0)
 		Tool.PHYSICAL:
-			draw_circle(origin + action_facing.normalized() * progress * 48.0, 28.0, Color(0.7, 0.9, 1.0, 0.38))
-			draw_circle(origin + action_facing.normalized() * progress * 48.0, 12.0, Color("#d9f2ff"))
+			var slash_origin := player_position + action_facing.normalized() * (34.0 + progress * 36.0)
+			draw_arc(slash_origin, 34.0, -1.0, 1.0, 18, Color("#fff0b2"), 7.0)
+			draw_arc(slash_origin, 24.0, -0.8, 0.8, 16, Color(1.0, 0.78, 0.35, 0.42), 4.0)
 		Tool.SPELL:
-			draw_circle(origin, 22.0 + progress * 28.0, Color(1.0, 0.48, 0.16, 0.28))
-			draw_circle(origin, 9.0, Color("#ffd36c"))
+			draw_circle(origin, 16.0 + progress * 18.0, Color(1.0, 0.48, 0.16, 0.22))
+			draw_circle(origin, 6.0, Color("#ffd36c"))
 		Tool.HOE, Tool.SEEDS, Tool.WATER:
 			draw_circle(origin, 12.0 + progress * 10.0, Color(1.0, 0.95, 0.62, 0.32))
+
+
+func _draw_projectiles() -> void:
+	for projectile in projectiles:
+		var pos := projectile["pos"] as Vector2
+		var life := float(projectile["life"])
+		if fireball_sheet != null:
+			var frame_size := Vector2(fireball_sheet.get_width() / 2.0, fireball_sheet.get_height() / 2.0)
+			var index := int(Time.get_ticks_msec() / 90) % 4
+			var source := Rect2(Vector2(index % 2, index / 2) * frame_size, frame_size)
+			draw_texture_rect_region(fireball_sheet, Rect2(pos - Vector2(18, 18), Vector2(36, 36)), source)
+		else:
+			draw_circle(pos, 13.0, Color(1.0, 0.42, 0.12, minf(1.0, life * 2.0)))
+			draw_circle(pos, 6.0, Color("#ffd36c"))
 
 
 func _draw_day_overlay() -> void:
