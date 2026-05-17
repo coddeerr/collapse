@@ -17,6 +17,12 @@
 tools/agent-sprite-forge/
 ```
 
+如果用户已经在本机 fork/clone 了该仓库，可以优先使用本地路径添加：
+
+```powershell
+git submodule add <本地或远端 fork 地址> tools/agent-sprite-forge
+```
+
 ## 采用的工作方式
 
 先把 sprite-forge 当作生产规范，而不是运行时依赖。
@@ -60,3 +66,9 @@ tools/agent-sprite-forge/
 - 昼夜轮替。
 
 后续目标是用本文件的规范生成正式 PNG/Spritesheet，再替换代码绘制占位图。
+
+更具体的首批资产生产契约见：
+
+```text
+art/asset-production-plan-v0.1.md
+```
