@@ -27,7 +27,9 @@ const CROP_GROW_TIME := 12.0
 const DAY_LENGTH := 150.0
 const ACTION_DURATION := 0.28
 const SKILL_DURATION := 0.46
-const HOMESTEAD_BACKGROUND_PATH := "res://art/maps/homestead_v0/homestead_background.png"
+const BUILDINGS_SHEET_PATH := "res://art/forge_source/buildings_sheet_chroma.png"
+const PROPS_SHEET_PATH := "res://art/forge_source/props_farm_sheet_chroma.png"
+const PLAYER_SHEET_PATH := "res://art/sprites/player/player_guardian_sheet.png"
 
 const TOOLS := [
 	{"id": Tool.HOE, "name": "锄头", "hint": "开垦空地"},
@@ -51,7 +53,9 @@ var herbs := 0
 var wood := 0
 var action_label_timer := 0.0
 var action_label_text := ""
-var homestead_background: Texture2D
+var buildings_sheet: Texture2D
+var props_sheet: Texture2D
+var player_sheet: Texture2D
 
 var plots: Array[Dictionary] = []
 var trees: Array[Dictionary] = []
@@ -64,8 +68,9 @@ var log_label: Label
 
 
 func _ready() -> void:
-	if ResourceLoader.exists(HOMESTEAD_BACKGROUND_PATH):
-		homestead_background = load(HOMESTEAD_BACKGROUND_PATH) as Texture2D
+	buildings_sheet = load(BUILDINGS_SHEET_PATH) as Texture2D if ResourceLoader.exists(BUILDINGS_SHEET_PATH) else null
+	props_sheet = load(PROPS_SHEET_PATH) as Texture2D if ResourceLoader.exists(PROPS_SHEET_PATH) else null
+	player_sheet = load(PLAYER_SHEET_PATH) as Texture2D if ResourceLoader.exists(PLAYER_SHEET_PATH) else null
 	_setup_world()
 	_setup_ui()
 	_log("欢迎来到灯火边境家园原型。WASD 移动，滚轮切换工具，左键或空格使用。")
@@ -455,14 +460,6 @@ func _log(message: String) -> void:
 
 
 func _draw_world() -> void:
-	if homestead_background != null:
-		draw_texture_rect(homestead_background, Rect2(Vector2.ZERO, SCREEN_SIZE), false)
-		draw_rect(Rect2(Vector2.ZERO, SCREEN_SIZE), Color(0.06, 0.08, 0.1, 0.08))
-	else:
-		_draw_placeholder_world()
-
-
-func _draw_placeholder_world() -> void:
 	draw_rect(Rect2(Vector2.ZERO, SCREEN_SIZE), Color("#243647"))
 	draw_rect(Rect2(Vector2(70, 88), Vector2(1040, 540)), Color("#87b86c"))
 	draw_rect(Rect2(Vector2(92, 112), Vector2(996, 494)), Color("#a5c97b"))
@@ -488,6 +485,11 @@ func _draw_plots() -> void:
 	for plot in plots:
 		var rect := plot["rect"] as Rect2
 		var state := int(plot["state"])
+		if props_sheet != null:
+			_draw_props_cell(clampi(state + 2, 2, 6), Rect2(rect.position + Vector2(-8, -18), Vector2(78, 68)))
+			if state == CropState.MATURE:
+				draw_rect(rect.grow(4), Color("#fff0a6"), false, 3.0)
+			continue
 		draw_polygon([
 			rect.position + Vector2(rect.size.x * 0.5, 0),
 			rect.position + Vector2(rect.size.x, rect.size.y * 0.38),
@@ -514,8 +516,16 @@ func _draw_plots() -> void:
 
 
 func _draw_interactive_props() -> void:
+	if buildings_sheet != null:
+		_draw_building_cell(0, Rect2(Vector2(96, 204), Vector2(260, 220)))
+		_draw_building_cell(1, Rect2(Vector2(735, 172), Vector2(280, 235)))
+		_draw_building_cell(2, Rect2(Vector2(120, 92), Vector2(150, 130)))
+		_draw_building_cell(3, Rect2(Vector2(1020, 92), Vector2(140, 160)))
+
 	for tree in trees:
 		var pos := tree["pos"] as Vector2
+		if props_sheet != null:
+			_draw_props_cell(0, Rect2(pos + Vector2(-56, -86), Vector2(112, 132)))
 		var distance := pos.distance_to(player_position)
 		if distance <= INTERACT_DISTANCE + 12.0:
 			draw_circle(pos + Vector2(0, 4), 36.0, Color(1.0, 0.92, 0.45, 0.16))
@@ -530,6 +540,12 @@ func _draw_player() -> void:
 	var bob := sin(Time.get_ticks_msec() / 120.0) * 2.0 if action_timer <= 0.0 else 0.0
 	var body_pos := player_position + Vector2(0, bob)
 	draw_circle(body_pos + Vector2(0, 22), 19.0, Color(0, 0, 0, 0.2))
+	if player_sheet != null:
+		var source := Rect2(Vector2.ZERO, Vector2(player_sheet.get_width() / 4.0, player_sheet.get_height() / 3.0))
+		draw_texture_rect_region(player_sheet, Rect2(body_pos + Vector2(-34, -70), Vector2(68, 92)), source)
+		if action_label_timer > 0.0:
+			draw_string(ThemeDB.fallback_font, body_pos + Vector2(-24, -80), action_label_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("#fff1a8"))
+		return
 	draw_rect(Rect2(body_pos + Vector2(-15, -8), Vector2(30, 40)), Color("#4d78c9"))
 	draw_circle(body_pos + Vector2(0, -24), 17.0, Color("#f0c79d"))
 	draw_rect(Rect2(body_pos + Vector2(-19, -4), Vector2(38, 8)), Color("#2e4d8c"))
@@ -537,6 +553,20 @@ func _draw_player() -> void:
 
 	if action_label_timer > 0.0:
 		draw_string(ThemeDB.fallback_font, body_pos + Vector2(-24, -58), action_label_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("#fff1a8"))
+
+
+func _draw_building_cell(index: int, target: Rect2) -> void:
+	var cell_size := Vector2(buildings_sheet.get_width() / 2.0, buildings_sheet.get_height() / 2.0)
+	var col := index % 2
+	var row := index / 2
+	draw_texture_rect_region(buildings_sheet, target, Rect2(Vector2(col, row) * cell_size, cell_size))
+
+
+func _draw_props_cell(index: int, target: Rect2) -> void:
+	var cell_size := Vector2(props_sheet.get_width() / 3.0, props_sheet.get_height() / 3.0)
+	var col := index % 3
+	var row := index / 3
+	draw_texture_rect_region(props_sheet, target, Rect2(Vector2(col, row) * cell_size, cell_size))
 
 
 func _draw_action_effect() -> void:
