@@ -23,6 +23,7 @@ const ADVENTURER_SPEED := 180.0
 const SHOP_UPGRADE_MATERIAL_COST := 5
 const SHOP_UPGRADE_GOLD_COST := 10
 
+const EXPEDITION_BAR_SIZE := Vector2(180, 14)
 const FARM_PLOT_SIZE := Vector2(86, 86)
 const WAIT_POS := Vector2(930, 520)
 const SHOP_POS := Vector2(245, 515)
@@ -44,6 +45,7 @@ var random := RandomNumberGenerator.new()
 var resource_label: Label
 var shop_label: Label
 var adventurer_label: Label
+var objective_label: Label
 var hint_label: Label
 var log_label: Label
 var craft_button: Button
@@ -123,6 +125,11 @@ func _setup_ui() -> void:
 	adventurer_label = Label.new()
 	box.add_child(adventurer_label)
 
+	objective_label = Label.new()
+	objective_label.add_theme_font_size_override("font_size", 16)
+	objective_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	box.add_child(objective_label)
+
 	craft_button = Button.new()
 	craft_button.text = "制作小药水：2 药草 → 1 小药水"
 	craft_button.pressed.connect(_on_craft_pressed)
@@ -133,7 +140,7 @@ func _setup_ui() -> void:
 	box.add_child(upgrade_button)
 
 	hint_label = Label.new()
-	hint_label.text = "操作：点击棕色农田播种；成熟后再次点击收获。"
+	hint_label.text = "操作：点击棕色农田播种；发亮代表成熟；绿色进度条代表成长中。"
 	hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(hint_label)
 
@@ -240,11 +247,12 @@ func _on_upgrade_pressed() -> void:
 
 
 func _update_ui() -> void:
-	resource_label.text = "资源：药草 %d | 小药水库存 %d | 怪物材料 %d | 金币 %d" % [
+	resource_label.text = "资源：药草 %d | 小药水库存 %d | 怪物材料 %d | 金币 %d\n农田：%s" % [
 		herbs,
 		potion_stock,
 		monster_materials,
 		gold,
+		_get_plot_summary_text(),
 	]
 
 	shop_label.text = "药剂店：Lv%d | 库存 %d/%d | 药水售价 %d 金币" % [
@@ -255,6 +263,8 @@ func _update_ui() -> void:
 	]
 
 	adventurer_label.text = "冒险者：%s" % _get_adventurer_state_text()
+	objective_label.text = "下一步：%s" % _get_objective_text()
+
 	craft_button.disabled = herbs < HERBS_PER_POTION or potion_stock >= shop_capacity
 	upgrade_button.text = "升级药剂店：%d 怪物材料 + %d 金币" % [
 		SHOP_UPGRADE_MATERIAL_COST,
@@ -278,12 +288,65 @@ func _get_adventurer_state_text() -> String:
 	return "未知"
 
 
+func _get_plot_summary_text() -> String:
+	return "空地 %d | 成长中 %d | 可收获 %d" % [
+		_count_plots(CropState.EMPTY),
+		_count_plots(CropState.GROWING),
+		_count_plots(CropState.MATURE),
+	]
+
+
+func _get_objective_text() -> String:
+	if monster_materials >= SHOP_UPGRADE_MATERIAL_COST and gold >= SHOP_UPGRADE_GOLD_COST:
+		return "升级药剂店，扩大药水库存上限。"
+	if _count_plots(CropState.MATURE) > 0:
+		return "点击发亮的农田，收获药草。"
+	if herbs >= HERBS_PER_POTION and potion_stock < shop_capacity:
+		return "制作小药水，补给下一次出征。"
+	if adventurer_state == AdventurerState.EXPEDITION:
+		return "等待冒险者回村，带回怪物材料。"
+	if adventurer_state == AdventurerState.GOING_TO_SHOP:
+		return "冒险者正在买药水，准备出村。"
+	if adventurer_state == AdventurerState.GOING_TO_EXIT:
+		return "冒险者正前往出口，马上开始出征。"
+	if adventurer_state == AdventurerState.RETURNING:
+		return "冒险者正在回村，准备结算下一轮。"
+	if potion_stock > 0:
+		return "药剂店已有库存，冒险者会自动购买。"
+	if _count_plots(CropState.GROWING) > 0:
+		return "等待药草成熟，绿色条越满越接近收获。"
+	if _count_plots(CropState.EMPTY) > 0:
+		return "点击空农田播种药草。"
+	return "继续种药草、制药水、供给冒险者。"
+
+
+func _count_plots(state_value: int) -> int:
+	var count := 0
+	for plot in plots:
+		if int(plot["state"]) == state_value:
+			count += 1
+	return count
+
+
+func _draw_expedition_progress() -> void:
+	if adventurer_state != AdventurerState.EXPEDITION:
+		return
+
+	var progress := 1.0 - expedition_timer / EXPEDITION_TIME
+	var bar_position := Vector2(800, 72)
+	var bar_rect := Rect2(bar_position, EXPEDITION_BAR_SIZE)
+	draw_rect(bar_rect.grow(4), Color("#4e3d2c"))
+	draw_rect(bar_rect, Color("#2e261d"))
+	draw_rect(Rect2(bar_position, Vector2(EXPEDITION_BAR_SIZE.x * clampf(progress, 0.0, 1.0), EXPEDITION_BAR_SIZE.y)), Color("#f0c15a"))
+
+
 func _draw_world() -> void:
 	draw_rect(Rect2(Vector2.ZERO, Vector2(1280, 720)), Color("#8fcf7a"))
 	draw_rect(Rect2(Vector2(0, 575), Vector2(1280, 145)), Color("#6fbf68"))
 	draw_line(SHOP_POS, EXIT_POS, Color("#d3b071"), 34.0)
 	draw_line(SHOP_POS, EXIT_POS, Color("#c89f5b"), 26.0)
 	draw_rect(Rect2(EXIT_POS + Vector2(-30, -60), Vector2(80, 120)), Color("#b18a55"))
+	_draw_expedition_progress()
 
 
 func _draw_farm() -> void:
@@ -298,12 +361,17 @@ func _draw_farm() -> void:
 			CropState.GROWING:
 				var progress := 1.0 - float(plot["timer"]) / GROW_TIME
 				var crop_rect := rect.grow(-22)
+				var progress_bar := Rect2(rect.position + Vector2(10, rect.size.y - 13), Vector2((rect.size.x - 20) * clampf(progress, 0.0, 1.0), 6))
 				crop_rect.size.y *= clampf(progress, 0.15, 1.0)
 				crop_rect.position.y = rect.position.y + rect.size.y - 22 - crop_rect.size.y
 				draw_rect(crop_rect, Color("#51a64b"))
+				draw_rect(Rect2(rect.position + Vector2(10, rect.size.y - 13), Vector2(rect.size.x - 20, 6)), Color("#5e3c24"))
+				draw_rect(progress_bar, Color("#b9e56d"))
 			CropState.MATURE:
+				draw_rect(rect.grow(4), Color("#fff2a6"), false, 4.0)
 				draw_rect(rect.grow(-18), Color("#4ebd4a"))
 				draw_circle(rect.get_center(), 18.0, Color("#94e06f"))
+				draw_circle(rect.get_center() + Vector2(22, -22), 7.0, Color("#fff8b8"))
 
 
 func _draw_shop() -> void:

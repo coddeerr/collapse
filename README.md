@@ -24,6 +24,8 @@
 
 ## 运行方式
 
+最快方式：双击 `play_game.bat`。
+
 1. 打开 Godot 4。
 2. 选择 `Import`。
 3. 选择本目录下的 `project.godot`。
@@ -47,6 +49,15 @@ godot_console.exe --headless --path . --quit
 
 - `game-design-v0.1.md`：第一版玩法文档。
 - `session-notes-game-concept.md`：前期讨论记录。
+- `art/style-exploration/art-direction-v0.1.md`：当前美术方向记录。
+
+## 当前美术方向
+
+- 视角：轻 45 度俯视表现，底层逻辑仍保持 2D 俯视/网格友好。
+- 风格暂名：灯火边境 / Lantern Frontier。
+- 核心气质：温暖废土童话、生物异变、幸存者安全区、夜晚防守。
+- 关键对比：村庄内的温暖灯光与村外污染生态形成强对比。
+- 概念图目录：`art/concepts/` 与 `art/style-exploration/`。
 
 ## 当前原则
 

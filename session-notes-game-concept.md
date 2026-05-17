@@ -246,3 +246,170 @@ Skill 和普通提示词的区别：
 
 玩家通过种药草制作药水，冒险者买药水后出村打怪，带回材料，玩家再升级药剂店。
 
+## 8. 当前项目仓库状态
+
+本节记录于 2026-05-17 后续开发阶段。
+
+### 8.1 远端仓库
+
+- GitHub 仓库：`https://github.com/coddeerr/collapse`
+- Git 远端地址：`https://github.com/coddeerr/collapse.git`
+- 主分支：`main`
+- 首次提交：`48d87e5 Initial Godot prototype`
+
+### 8.2 本地仓库
+
+- 当前正式工作目录：`D:\collapse`
+- Godot 项目入口：`D:\collapse\project.godot`
+- 旧的临时工作目录：`C:\Users\Admin\Documents\Codex\2026-05-17\new-chat`
+- 后续继续开发时，应优先使用 `D:\collapse`，不要再使用 `new-chat` 目录。
+
+### 8.3 当前已实现的 Godot 原型
+
+已创建 Godot 4 项目，核心文件包括：
+
+- `D:\collapse\project.godot`
+- `D:\collapse\scenes\main.tscn`
+- `D:\collapse\scripts\main.gd`
+- `D:\collapse\README.md`
+- `D:\collapse\game-design-v0.1.md`
+
+当前原型已实现：
+
+- 4 块农田。
+- 点击农田播种药草。
+- 药草成熟后点击收获。
+- 使用 2 个药草制作 1 个小药水。
+- 药剂店储存小药水。
+- 冒险者自动购买小药水。
+- 冒险者自动出村讨伐。
+- 冒险者返回后带回怪物材料。
+- 使用怪物材料和金币升级药剂店。
+
+### 8.4 当前体验方式
+
+用户本机已安装 Godot。
+
+体验方式：
+
+1. 打开 Godot。
+2. Import 项目。
+3. 选择 `D:\collapse\project.godot`。
+4. 打开项目后点击运行。
+
+也可以在 PowerShell 中运行：
+
+```powershell
+cd D:\collapse
+godot.exe --path .
+```
+
+### 8.5 当前注意事项
+
+- 之后开发请以 `D:\collapse` 为准。
+- 目前还没有继续修改 `D:\collapse` 中的代码，只是从远端 clone 并验证项目可加载。
+- 用户刚刚要求“先不要执行命令，先保存 context”，所以后续新 session 应先读取本文件和 `game-design-v0.1.md`，再继续。
+- 如需启动 Godot 可见窗口，需要用户确认或由用户自己手动打开。
+
+### 8.6 建议下一步
+
+下一步可以从以下方向继续：
+
+- 让用户先试玩当前原型，收集体验反馈。
+- 如果不能运行，优先修 Godot 报错。
+- 如果能运行，下一步建议改善交互反馈，例如成熟提示、按钮布局、冒险者路径、数值节奏。
+- 再下一步可以拆分 `scripts/main.gd`，把农田、库存、冒险者、药剂店拆成独立脚本。
+
+## 9. 2026-05-17 后续开发进展
+
+### 9.1 游戏入口
+
+已新增 Windows 启动入口：
+
+- `D:\collapse\play_game.bat`
+
+双击该文件会自动从 `D:\collapse` 启动 Godot 项目并运行主场景：
+
+- `res://scenes/main.tscn`
+
+该入口不会锁定旧版本；只要后续开发继续更新 `D:\collapse`，双击同一个 bat 就会体验当前最新项目状态。
+
+### 9.2 原型交互反馈增强
+
+已更新 `D:\collapse\scripts\main.gd`：
+
+- 新增“下一步”目标提示。
+- 新增农田状态统计：空地、成长中、可收获。
+- 药草成长中显示绿色进度条。
+- 成熟农田显示发亮边框和亮点提示。
+- 冒险者出征时显示进度条。
+
+验证命令：
+
+```powershell
+godot_console.exe --headless --path . --quit
+```
+
+### 9.3 视角结论
+
+当前选择：
+
+- 使用轻 45 度俯视表现。
+- 底层逻辑仍保持 2D 俯视/网格友好。
+
+原因：
+
+- 比纯俯视更有作品感和村庄空间感。
+- 比严格等距视角更易控制点击、寻路、建筑遮挡和防守路线。
+- 适合先做经营/防守玩法，再逐步替换正式美术。
+
+### 9.4 世界观与美术风格结论
+
+用户确认的世界观基底：
+
+- 一系列灾难导致地球生物变异。
+- 人类适合生存的家园不断缩小。
+- 玩家守护一片仍适合人类生存的小区域。
+- 怪物觊觎这片土地，会在夜晚攻打村庄。
+- 玩家有时必须进入非安全区收集材料、战斗和探索。
+
+当前推荐并采用的美术方向暂名：
+
+- 灯火边境 / Lantern Frontier
+
+核心风格：
+
+- 轻 45 度俯视。
+- 手绘 2D。
+- 温暖废土童话。
+- 生态异变。
+- 小型幸存者村庄。
+- 安全光源。
+- 污染边界。
+- 夜晚怪物潮。
+
+核心情绪：
+
+- 村庄是值得守护的。
+- 村外世界不是普通黑暗，而是生态上“不对劲”。
+- 白天偏经营和修复，夜晚偏防守和压力。
+
+### 9.5 Image2 / Cherry Studio 美术生成闭环
+
+已通过本地 Cherry Studio API 调用 `gptimage2` 生成概念图。
+
+链路：
+
+- 本地 API：`http://127.0.0.1:23333/v1/chat/completions`
+- 模型：`d84daab0-0459-4f3b-99f8-ff8408e1d091:gptimage2`
+- 返回格式：Markdown 内嵌 `data:image/png;base64,...`
+- 保存位置：`D:\collapse\art\...`
+
+已保存概念图：
+
+- `D:\collapse\art\concepts\village-topdown-concept.png`
+- `D:\collapse\art\concepts\village-three-quarter-concept.png`
+- `D:\collapse\art\style-exploration\style-01-safe-zone-day.png`
+- `D:\collapse\art\style-exploration\style-02-polluted-boundary-dusk.png`
+- `D:\collapse\art\style-exploration\style-03-night-attack.png`
+- `D:\collapse\art\style-exploration\art-direction-v0.1.md`
